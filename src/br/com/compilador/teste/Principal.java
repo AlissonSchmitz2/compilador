@@ -4,7 +4,7 @@ public class Principal {
 
 	public static void main(String[] args) {
 		
-		//Init
+		//Init teste
 		
 	}
 
