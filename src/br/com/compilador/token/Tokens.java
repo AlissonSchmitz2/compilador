@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class Tokens {
 
-	public static Map<String, Integer> mapTokens = new HashMap<String, Integer>();
+	public static HashMap<String, Integer> mapTokens = new HashMap<String, Integer>();
 
 	public Tokens() {
 		criarTokens();
@@ -65,13 +65,25 @@ public class Tokens {
 		mapTokens.put("$", 51);
 	}
 
-	public int getCodToken(String token) {
+	public int getCodToken(String simbolo) {
 
-		if (mapTokens.containsKey(token)) {
-			return mapTokens.get(token);
+		if (mapTokens.containsKey(simbolo)) {
+			return mapTokens.get(simbolo);
 		}
 
 		return 0;
+	}
+
+	public String getSimbolo(int cod) {
+		if (mapTokens.containsValue(cod)) {
+			for (Map.Entry<String, Integer> candidatoEntry : mapTokens.entrySet()) {
+				if(candidatoEntry.getValue().equals(cod)) {
+					return candidatoEntry.getKey();
+				}
+			}
+		}
+
+		return null;
 	}
 
 }
