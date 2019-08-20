@@ -1,10 +1,10 @@
 (*TESTE - Exemplo Válido*)
 PROGRAM TESTE123;
 	LABEL
-		label_a, label_b;
+		label_a,label_b;
 	
 	CONST
-		a = -100;
+		a= -100;
 		b = -200;
 	VAR 
 		 X, Y, Z : INTEGER;
