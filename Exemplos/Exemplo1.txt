@@ -4,7 +4,7 @@ PROGRAM TESTE123;
 		label_a,label_b;
 	
 	CONST
-		a= -100;
+		a := -100;
 		b = -200;
 	VAR 
 		 X, Y, Z : INTEGER;

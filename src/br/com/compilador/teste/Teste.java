@@ -12,29 +12,69 @@ public class Teste {
 		BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\eduar\\Desktop\\teste.txt"));
 		String linha;
 		String teste = "";
+		char c;
 		while ((linha = br.readLine()) != null) {
 			char linhaArray[] = linha.toCharArray();
-			for(int i = 0; i <= linhaArray.length; i++ ) {
-				
+			for(int i = 0; i < linhaArray.length; i++ ) {
+				c = ' ';
 				
 				
 				if(letra(linhaArray[i])) {
 					teste = teste + linhaArray[i];
-					i++;
-					while(letra(linhaArray[i]) || digito(linhaArray[i])) {
-						teste = teste + linhaArray[i];
-						if(i<linhaArray.length) {
+					c = linhaArray[i+1];
+					while(letra(c) || digito(c)) {
 						i++;
-						}
+						teste = teste + linhaArray[i];
+						c = ' ';
+						if(i+1 < linhaArray.length)
+							c = linhaArray[i+1];
+						
 					}
+					System.out.println(teste);
+					teste = "";
 					
-				}else {
-					System.out.println("terminou");
+				}else if(digito(linhaArray[i])) {
+					teste = teste + linhaArray[i];
+					c = linhaArray[i+1];
+					while(digito(c)) {
+						i++;
+						teste = teste + linhaArray[i];
+						c = ' ';
+						if(i+1 < linhaArray.length)
+							c = linhaArray[i+1];
+						
+					}
+					System.out.println(teste);
+					teste = "";	
+				}
+				else if(linhaArray[i] == ' '){
+					
+	
+				}
+				else if(linhaArray[i] == ';'){
+					teste = teste + linhaArray[i];
+					System.out.println(teste);
+					teste = "";
+					
+				}else if(linhaArray[i] == '<' || linhaArray[i] == '>') {
+					teste = teste + linhaArray[i];
+					c = linhaArray[i+1];
+					while(letra(c) || digito(c)) {
+						i++;
+						teste = teste + linhaArray[i];
+						c = ' ';
+						if(i+1 < linhaArray.length)
+							c = linhaArray[i+1];
+						
+					}
+					System.out.println(teste);
+					teste = "";
+					
 				}
 				
-			}
+			
 
-			System.out.println(linha);
+			
 		}
 
 		br.close();
