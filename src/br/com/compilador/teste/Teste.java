@@ -18,6 +18,7 @@ public class Teste {
 			char linhaArray[] = linha.toCharArray();
 			for(int i = 0; i < linhaArray.length; i++ ) {
 				c = ' ';
+<<<<<<< HEAD
 
 			if(linhaArray[i] == '(' && linhaArray[i+1] == '*') {
 					
@@ -31,6 +32,11 @@ public class Teste {
 					}
 					
 				}else if(letra(linhaArray[i])) {
+=======
+				
+				
+				if(letra(linhaArray[i])) {
+>>>>>>> 42c337337dae7fcf42e7cfb2dfc509dd029b020a
 					teste = teste + linhaArray[i];
 					c = linhaArray[i+1];
 					while(letra(c) || digito(c)) {
@@ -84,7 +90,11 @@ public class Teste {
 				}
 				
 			
+<<<<<<< HEAD
 			}
+=======
+
+>>>>>>> 42c337337dae7fcf42e7cfb2dfc509dd029b020a
 			
 		}
 
