@@ -1,4 +1,4 @@
-(*TESTE - Exemplo Válido*)
+(*TESTE - Exemplo Valido*)
 PROGRAM TESTE123;
 	LABEL
 		label_a,label_b;

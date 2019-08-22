@@ -1,1 +1,10 @@
+(*TESTE - Exemplo Valido*)
 PROGRAM TESTE123;
+(*
+coomentaaario 
+555555
+*)
+aaa bbb226	6262		ddsfsdfs
+sdfsdf
+	END; 
+END.

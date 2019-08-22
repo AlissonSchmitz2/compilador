@@ -9,39 +9,90 @@ public class Teste {
 	public static int contFin;
 
 	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\eduar\\Desktop\\teste.txt"));
+		BufferedReader br = new BufferedReader(new FileReader("C:\\\\Users\\\\aliss\\\\Documents\\\\Projetos Eclipse\\\\compilador\\\\Exemplos\\\\Exemplo1.txt"));
+
 		String linha;
 		String teste = "";
+		char c;
 		while ((linha = br.readLine()) != null) {
 			char linhaArray[] = linha.toCharArray();
-			for(int i = 0; i <= linhaArray.length; i++ ) {
-				
-				
-				
-				if(letra(linhaArray[i])) {
-					teste = teste + linhaArray[i];
-					i++;
-					while(letra(linhaArray[i]) || digito(linhaArray[i])) {
-						teste = teste + linhaArray[i];
-						if(i<linhaArray.length) {
-						i++;
+			for(int i = 0; i < linhaArray.length; i++ ) {
+				c = ' ';
+
+			if(linhaArray[i] == '(' && linhaArray[i+1] == '*') {
+					
+					if(linhaArray.length > 3) {
+						i+=2;
+						while(linhaArray[i] != '*' && linhaArray[i+1] != ')') {
+							i++;
 						}
+					}else{
+						linha = br.readLine();
 					}
 					
-				}else {
-					System.out.println("terminou");
+				}else if(letra(linhaArray[i])) {
+					teste = teste + linhaArray[i];
+					c = linhaArray[i+1];
+					while(letra(c) || digito(c)) {
+						i++;
+						teste = teste + linhaArray[i];
+						c = ' ';
+						if(i+1 < linhaArray.length)
+							c = linhaArray[i+1];
+						
+					}
+					System.out.println(teste);
+					teste = "";
+					
+				}else if(digito(linhaArray[i])) {
+					teste = teste + linhaArray[i];
+					c = linhaArray[i+1];
+					while(digito(c)) {
+						i++;
+						teste = teste + linhaArray[i];
+						c = ' ';
+						if(i+1 < linhaArray.length)
+							c = linhaArray[i+1];
+						
+					}
+					System.out.println(teste);
+					teste = "";	
+				}
+				else if(linhaArray[i] == ' '){
+					
+	
+				}
+				else if(linhaArray[i] == ';'){
+					teste = teste + linhaArray[i];
+					System.out.println(teste);
+					teste = "";
+					
+				}else if(linhaArray[i] == '<' || linhaArray[i] == '>') {
+					teste = teste + linhaArray[i];
+					c = linhaArray[i+1];
+					while(letra(c) || digito(c)) {
+						i++;
+						teste = teste + linhaArray[i];
+						c = ' ';
+						if(i+1 < linhaArray.length)
+							c = linhaArray[i+1];
+						
+					}
+					System.out.println(teste);
+					teste = "";
+					
 				}
 				
+			
 			}
-
-			System.out.println(linha);
+			
 		}
 
 		br.close();
 	}
 
 	public static boolean letra(char c) {
-		if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') {
+		if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_') {
 			return true;
 		}
 		return false;
