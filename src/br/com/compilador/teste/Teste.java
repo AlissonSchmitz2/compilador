@@ -9,84 +9,68 @@ public class Teste {
 	public static int contFin;
 
 	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader("C:\\\\Users\\\\aliss\\\\Documents\\\\Projetos Eclipse\\\\compilador\\\\Exemplos\\\\Exemplo1.txt"));
-
+		BufferedReader br = new BufferedReader(new FileReader(
+				"C:\\\\Users\\\\aliss\\\\Documents\\\\Projetos Eclipse\\\\compilador\\\\Exemplos\\\\Exemplo1.txt"));
 		String linha;
-		String teste = "";
-		char c;
+		String palavras = "";
+		char caracter;
+
 		while ((linha = br.readLine()) != null) {
 			char linhaArray[] = linha.toCharArray();
-			for(int i = 0; i < linhaArray.length; i++ ) {
-				c = ' ';
 
-			if(linhaArray[i] == '(' && linhaArray[i+1] == '*') {
-					
-					if(linhaArray.length > 3) {
-						i+=2;
-						while(linhaArray[i] != '*' && linhaArray[i+1] != ')') {
+			for (int i = 0; i < linhaArray.length; i++) {
+				caracter = ' ';
+
+				// Comentários do código
+				if (linhaArray[i] == '(' && linhaArray[i + 1] == '*') {
+					if (linhaArray.length > 3) {
+						i += 2;
+						while (linhaArray[i] != '*' && linhaArray[i + 1] != ')') {
 							i++;
 						}
-					}else{
+					} else {
 						linha = br.readLine();
 					}
-					
-				}else if(letra(linhaArray[i])) {
 
-					teste = teste + linhaArray[i];
-					c = linhaArray[i+1];
-					while(letra(c) || digito(c)) {
+				//Letras	
+				} else if (letra(linhaArray[i]) || linhaArray[i] == '<' || linhaArray[i] == '>') {
+					palavras += linhaArray[i];
+					caracter = linhaArray[i+1];
+					
+					while (letra(caracter) || digito(caracter)) {
 						i++;
-						teste = teste + linhaArray[i];
-						c = ' ';
-						if(i+1 < linhaArray.length)
-							c = linhaArray[i+1];
-						
+						palavras += linhaArray[i];
+						caracter = ' ';
+						if (i + 1 < linhaArray.length)
+							caracter = linhaArray[i + 1];
 					}
-					System.out.println(teste);
-					teste = "";
-					
-				}else if(digito(linhaArray[i])) {
-					teste = teste + linhaArray[i];
-					c = linhaArray[i+1];
-					while(digito(c)) {
+					System.out.println(palavras);
+					palavras = "";
+
+				} else if (digito(linhaArray[i])) {
+					palavras += linhaArray[i];
+					caracter = linhaArray[i+1];
+					while (digito(caracter)) {
 						i++;
-						teste = teste + linhaArray[i];
-						c = ' ';
-						if(i+1 < linhaArray.length)
-							c = linhaArray[i+1];
-						
+						palavras += linhaArray[i];
+						caracter = ' ';
+						if (i + 1 < linhaArray.length)
+							caracter = linhaArray[i+1];
+
 					}
-					System.out.println(teste);
-					teste = "";	
-				}
-				else if(linhaArray[i] == ' '){
-					
-	
-				}
-				else if(linhaArray[i] == ';'){
-					teste = teste + linhaArray[i];
-					System.out.println(teste);
-					teste = "";
-					
-				}else if(linhaArray[i] == '<' || linhaArray[i] == '>') {
-					teste = teste + linhaArray[i];
-					c = linhaArray[i+1];
-					while(letra(c) || digito(c)) {
-						i++;
-						teste = teste + linhaArray[i];
-						c = ' ';
-						if(i+1 < linhaArray.length)
-							c = linhaArray[i+1];
-						
-					}
-					System.out.println(teste);
-					teste = "";
-					
-				}
-				
+					System.out.println(palavras);
+					palavras = "";
+				} else if (linhaArray[i] == ' ') {
+
+				} else if (linhaArray[i] == ';' || linhaArray[i] == '.') {
+					palavras += linhaArray[i];
+					System.out.println(palavras);
+					palavras = "";
+
+				} 
+
 			}
 
-			
 		}
 
 		br.close();
@@ -105,37 +89,4 @@ public class Teste {
 			idDigito = true;
 		return idDigito;
 	}
-
-//	public static void main(String[] args) {
-//		char[] a = { 'm', 'n', 'x' };
-//		String b = String.copyValueOf(a);
-//		System.out.println(b);
-//		String c = "aabbC4";
-//		String d = TrabalharIdentificador(c);
-//		
-//
-//	}
-
-//	public static String TrabalharIdentificador(String texto) {
-//		char texto2[] = texto.toCharArray();
-//		StringBuilder str = new StringBuilder();
-//
-//		contIni = 0;
-//		contFin = 0;
-//		if (Character.isLetter(texto2[0])) {
-//			for (int i = 0; i <= texto2.length; i++) {
-//				while (Character.isLetterOrDigit(texto2[i])) {
-//					contFin++;
-//					str.append(texto2[i]);
-//					
-//				}
-//			}
-//			return str.toString();
-//			
-//		} else {
-//			return null;
-//		}
-//
-//	}
-
 }
