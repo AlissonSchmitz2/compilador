@@ -28,15 +28,16 @@ public class Teste {
 						while (linhaArray[i] != '*' && linhaArray[i + 1] != ')') {
 							i++;
 						}
+						i++;
 					} else {
 						linha = br.readLine();
 					}
 
-				//Letras	
-				} else if (letra(linhaArray[i]) || linhaArray[i] == '<' || linhaArray[i] == '>') {
+					// Letras
+				} else if (letra(linhaArray[i])) {
 					palavras += linhaArray[i];
-					caracter = linhaArray[i+1];
-					
+					caracter = linhaArray[i + 1];
+
 					while (letra(caracter) || digito(caracter)) {
 						i++;
 						palavras += linhaArray[i];
@@ -47,27 +48,51 @@ public class Teste {
 					System.out.println(palavras);
 					palavras = "";
 
-				} else if (digito(linhaArray[i])) {
+				}
+//				else if(linhaArray[i] == '<' || linhaArray[i] == '>') {
+//					palavras += linhaArray[i];
+//					caracter = linhaArray[i+1];
+//					
+//					while (letra(caracter) || digito(caracter)) {
+//						i++;
+//						palavras += linhaArray[i];
+//						caracter = ' ';
+//						if (i + 1 < linhaArray.length)
+//							caracter = linhaArray[i + 1];
+//					}
+//					System.out.println(palavras);
+//					palavras = "";
+//			}
+				else if (digito(linhaArray[i])) {
 					palavras += linhaArray[i];
-					caracter = linhaArray[i+1];
+					caracter = linhaArray[i + 1];
 					while (digito(caracter)) {
 						i++;
 						palavras += linhaArray[i];
 						caracter = ' ';
 						if (i + 1 < linhaArray.length)
-							caracter = linhaArray[i+1];
+							caracter = linhaArray[i + 1];
 
 					}
 					System.out.println(palavras);
 					palavras = "";
 				} else if (linhaArray[i] == ' ') {
 
-				} else if (linhaArray[i] == ';' || linhaArray[i] == '.') {
+				} else if (simbolos1Caracter(linhaArray[i])) {
 					palavras += linhaArray[i];
+					try {
+						if (simbolos2Caracter(linhaArray[i], linhaArray[i + 1])) {
+							palavras += linhaArray[i + 1];
+							i++;
+						}
+					} catch (ArrayIndexOutOfBoundsException e) {
+//							e.printStackTrace();
+					}
+
 					System.out.println(palavras);
 					palavras = "";
 
-				} 
+				}
 
 			}
 
@@ -84,9 +109,26 @@ public class Teste {
 	}
 
 	public static boolean digito(char c) {
-		boolean idDigito = false;
-		if (c >= '0' && c <= '9')
-			idDigito = true;
-		return idDigito;
+		if (c >= '0' && c <= '9') {
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean simbolos2Caracter(char c, char cProx) {
+		if ((c == ':' && cProx == '=') || (c == '>' && cProx == '=') || (c == '<' && cProx == '=')
+				|| (c == '<' && cProx == '>') || (c == '.' && cProx == '.')) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public static boolean simbolos1Caracter(char c) {
+		if (c == '+' || c == '-' || c == '*' || c == '/' || c == '[' || c == ']' || c == '(' || c == ')' || c == ':'
+				|| c == '=' || c == '>' || c == '<' || c == ',' || c == ';' || c == '.' || c == '$') {
+			return true;
+		}
+		return false;
 	}
 }

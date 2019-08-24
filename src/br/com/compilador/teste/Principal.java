@@ -32,16 +32,16 @@ public class Principal {
 		
 		Tokens tokens = new Tokens();
 		
-		System.out.println(tokens.getCodToken(";"));
+		System.out.println(tokens.getCodToken("VAr"));
 		System.out.println(tokens.getSimbolo(51));
-		
-		try {
-			StringBuilder builder = ManipularArquivo.lerArquivo("C:\\Users\\aliss\\Documents\\Projetos Eclipse\\compilador\\Exemplos\\teste.txt");
-			System.out.print(builder.toString());
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		
+//		try {
+//			StringBuilder builder = ManipularArquivo.lerArquivo("C:\\Users\\aliss\\Documents\\Projetos Eclipse\\compilador\\Exemplos\\teste.txt");
+//			System.out.print(builder.toString());
+//			
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 }

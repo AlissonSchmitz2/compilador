@@ -1,5 +1,6 @@
 (*TESTE - Exemplo Valido*)
 PROGRAM TESTE123;
+:=>=<=<>..
 	LABEL
 		label_a,label_b;
 	
@@ -59,7 +60,7 @@ BEGIN
 	REPEAT 
 	BEGIN 
 	END
-	UNTIL X > 10;
+	UNTIL X >a 10;
 
 	(*Testa as possibilidades do WRITELN*)
 	WRITELN(X,Z,Y);
