@@ -4,37 +4,50 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class Teste {
+public class AnalisadorLexico {
 	public static int contIni;
 	public static int contFin;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader(
-				"C:\\\\Users\\\\aliss\\\\Documents\\\\Projetos Eclipse\\\\compilador\\\\Exemplos\\\\Exemplo1.txt"));
+				"C:\\Users\\eduar\\Desktop\\compilador\\Exemplos\\Exemplo1.txt"));
 		String linha;
 		String palavras = "";
-		char caracter;
+		char caracter, c, c2 = ' ';
+		boolean comentario = false;
 
 		while ((linha = br.readLine()) != null) {
 			char linhaArray[] = linha.toCharArray();
 
 			for (int i = 0; i < linhaArray.length; i++) {
+				
+				// inicialização de variaveis
 				caracter = ' ';
+				c = linhaArray[i];
+				try {
+					c2 = linhaArray[i+1];
+				} catch (Exception e1) {
+//					e1.printStackTrace();
+				}
 
-				// Comentários do código
-				if (linhaArray[i] == '(' && linhaArray[i + 1] == '*') {
-					if (linhaArray.length > 3) {
-						i += 2;
-						while (linhaArray[i] != '*' && linhaArray[i + 1] != ')') {
-							i++;
-						}
-						i++;
-					} else {
-						linha = br.readLine();
-					}
+				// Tratamento de Comentários com uma ou mais de uma linha
+				if (c == '(' && c2 == '*') {
+					comentario = true;
+					i ++;
+				}
+				if (comentario && c == '*' && c2 == ')') {
+					i+=2;
+					comentario = false;
+					continue;
+				}
+				if(comentario) {
+					continue;				
+				}
 
+					
+					
 					// Letras
-				} else if (letra(linhaArray[i])) {
+				 else if (letra(linhaArray[i])) {
 					palavras += linhaArray[i];
 					caracter = linhaArray[i + 1];
 

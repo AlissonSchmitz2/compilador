@@ -1,6 +1,4 @@
-(*TESTE - Exemplo Valido
-
-abcd*)
+(*TESTE - Exemplo Valido abcd*)
 PROGRAM TESTE123;
 :=>=<=<>..
 	LABEL
