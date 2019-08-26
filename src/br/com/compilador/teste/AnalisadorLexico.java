@@ -3,6 +3,8 @@ package br.com.compilador.teste;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Stack;
+
 
 public class AnalisadorLexico {
 	public static int contIni;
@@ -13,16 +15,20 @@ public class AnalisadorLexico {
 				"C:\\Users\\eduar\\Desktop\\compilador\\Exemplos\\Exemplo1.txt"));
 		String linha;
 		String palavras = "";
-		char caracter, c, c2 = ' ';
+		char c2 = ' ', c= ' ';
 		boolean comentario = false;
+		int numLinha = -1;
+		Pilha p;
+		Stack<Pilha> simbolos = new Stack<Pilha>();
 
 		while ((linha = br.readLine()) != null) {
+			numLinha++;
 			char linhaArray[] = linha.toCharArray();
 
 			for (int i = 0; i < linhaArray.length; i++) {
 				
 				// inicialização de variaveis
-				caracter = ' ';
+				
 				c = linhaArray[i];
 				try {
 					c2 = linhaArray[i+1];
@@ -41,56 +47,49 @@ public class AnalisadorLexico {
 					continue;
 				}
 				if(comentario) {
-					continue;				
+					continue;
 				}
 
-					
+				//tratamento do livreral 'meu nome é julia' 
+
+					//fazer aqui
+				
 					
 					// Letras
 				 else if (letra(linhaArray[i])) {
 					palavras += linhaArray[i];
-					caracter = linhaArray[i + 1];
+					c2 = linhaArray[i + 1];
 
-					while (letra(caracter) || digito(caracter)) {
+					while (letra(c2) || digito(c2)) {
 						i++;
 						palavras += linhaArray[i];
-						caracter = ' ';
+						c2 = ' ';
 						if (i + 1 < linhaArray.length)
-							caracter = linhaArray[i + 1];
+							c2 = linhaArray[i + 1];
 					}
 					System.out.println(palavras);
+					p = new Pilha(26, numLinha, palavras);
+					simbolos.add(p);
 					palavras = "";
 
-				}
-//				else if(linhaArray[i] == '<' || linhaArray[i] == '>') {
-//					palavras += linhaArray[i];
-//					caracter = linhaArray[i+1];
-//					
-//					while (letra(caracter) || digito(caracter)) {
-//						i++;
-//						palavras += linhaArray[i];
-//						caracter = ' ';
-//						if (i + 1 < linhaArray.length)
-//							caracter = linhaArray[i + 1];
-//					}
-//					System.out.println(palavras);
-//					palavras = "";
-//			}
-				else if (digito(linhaArray[i])) {
+				} else if (c == '-' || digito(linhaArray[i])) {
 					palavras += linhaArray[i];
-					caracter = linhaArray[i + 1];
-					while (digito(caracter)) {
+					c2 = linhaArray[i + 1];
+					while (digito(c2)) {
 						i++;
 						palavras += linhaArray[i];
-						caracter = ' ';
+						c2 = ' ';
 						if (i + 1 < linhaArray.length)
-							caracter = linhaArray[i + 1];
+							c2 = linhaArray[i + 1];
 
 					}
 					System.out.println(palavras);
 					palavras = "";
+					
+					//caractere vazio
 				} else if (linhaArray[i] == ' ') {
-
+					
+					//simbolos
 				} else if (simbolos1Caracter(linhaArray[i])) {
 					palavras += linhaArray[i];
 					try {
