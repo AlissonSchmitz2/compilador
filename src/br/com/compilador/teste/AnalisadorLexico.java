@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Stack;
 
+import br.com.compilador.token.Tokens;
+
 
 public class AnalisadorLexico {
 	public static int contIni;
@@ -13,10 +15,11 @@ public class AnalisadorLexico {
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader(
 				"C:\\Users\\eduar\\Desktop\\compilador\\Exemplos\\Exemplo1.txt"));
+		Tokens tokens = new Tokens();
 		String linha;
 		String palavras = "";
 		char c2 = ' ', c= ' ';
-		boolean comentario = false;
+		boolean comentario = false, literal = false;
 		int numLinha = -1;
 		Pilha p;
 		Stack<Pilha> simbolos = new Stack<Pilha>();
@@ -37,6 +40,7 @@ public class AnalisadorLexico {
 				}
 
 				// Tratamento de Comentários com uma ou mais de uma linha
+				
 				if (c == '(' && c2 == '*') {
 					comentario = true;
 					i ++;
@@ -52,11 +56,28 @@ public class AnalisadorLexico {
 
 				//tratamento do livreral 'meu nome é julia' 
 
-					//fazer aqui
+				if (!literal && linhaArray[i] == '\'') {
+					literal = true;
+					palavras += linhaArray[i];
+				}else
+				if(literal && linhaArray[i] != '\'') {
+					palavras += linhaArray[i];
+					
+				}else
+				if (literal && linhaArray[i] == '\'') {
+					palavras += linhaArray[i];
+					i++;
+					System.out.println(palavras);
+					p = new Pilha(48, numLinha, palavras);
+					simbolos.add(p);
+					palavras = "";
+					literal = false;
+				}
+				
 				
 					
 					// Letras
-				 else if (letra(linhaArray[i])) {
+				 else if (!literal && letra(linhaArray[i])) {
 					palavras += linhaArray[i];
 					c2 = linhaArray[i + 1];
 
@@ -68,11 +89,12 @@ public class AnalisadorLexico {
 							c2 = linhaArray[i + 1];
 					}
 					System.out.println(palavras);
-					p = new Pilha(26, numLinha, palavras);
+					
+					p = new Pilha(tokens.getCodToken(palavras), numLinha, palavras);
 					simbolos.add(p);
 					palavras = "";
 
-				} else if (c == '-' || digito(linhaArray[i])) {
+				} else if (!literal && (c == '-' || digito(linhaArray[i]))) {
 					palavras += linhaArray[i];
 					c2 = linhaArray[i + 1];
 					while (digito(c2)) {
@@ -87,10 +109,10 @@ public class AnalisadorLexico {
 					palavras = "";
 					
 					//caractere vazio
-				} else if (linhaArray[i] == ' ') {
+				} else if (!literal && linhaArray[i] == ' ') {
 					
 					//simbolos
-				} else if (simbolos1Caracter(linhaArray[i])) {
+				} else if ( !literal && (simbolos1Caracter(linhaArray[i]))) {
 					palavras += linhaArray[i];
 					try {
 						if (simbolos2Caracter(linhaArray[i], linhaArray[i + 1])) {
@@ -102,6 +124,8 @@ public class AnalisadorLexico {
 					}
 
 					System.out.println(palavras);
+					p = new Pilha(tokens.getCodToken(palavras), numLinha, palavras);
+					simbolos.add(p);
 					palavras = "";
 
 				}

@@ -7,8 +7,9 @@ PROGRAM TESTE123;
 		label_a,label_b;
 	
 	CONST
+		c := 'Joao e maria';
 		a := -100;
-		b = -200;
+		b := -200;
 	VAR 
 		 X, Y, Z : INTEGER;
 		array_a : ARRAY[0..20] OF INTEGER;
