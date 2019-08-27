@@ -1,39 +1,17 @@
 package br.com.compilador.teste;
 
 import java.awt.Font;
+import java.util.ArrayList;
 import java.util.Enumeration;
 
 import javax.swing.UIManager;
 import javax.swing.plaf.FontUIResource;
 
-import br.com.compilador.token.Tokens;
 import br.com.compilador.view.PrincipalFormView;
 
 public class Principal {
 
 	public static void main(String[] args) {
-//		Stack<Integer> pilha = new Stack<>();
-//		
-//		- Variáveis importantes :
-//			- CODIGO – armazenará um código numérico relativo ao token encontrado
-//			(conforme tabela fornecida acima).
-//			- CAR – armazenará ao próximo caráter a ser analisado.
-//			- VALOR – armazenará o valor na base 10 de constantes inteiras
-//			encontradas (token = inteiro).
-//			- BUFFER_IDENT – armazenará os identificadores encontrados (token =
-//			identificador).
-//			- BUFFER_LITERAL – armazenará a cadeia relativa a literais (token= literal)
-		
-		
-		
-//			- Rotinas importantes : ************
-//			- PEGACAR – pega o próximo caráter no programa fonte e o coloca na
-//			variável CAR
-//			- BUSCA_PALAVRA_RESERVADA – verifica se token = identificador está
-//			na tabela de palavras reservadas. Caso não esteja trata-se realmente do
-//			token = identificador. Se estiver trata-se de palavra reservada cujo código
-//			está na própria tabela. 
-		
 		
 		
 		
@@ -70,9 +48,12 @@ public class Principal {
 
 					public void run() {
 
-						new PrincipalFormView().setVisible(true);
-						// Para testes
-						// new Window().setVisible(true);
+						PrincipalFormView menu = new PrincipalFormView();
+						menu.setVisible(true);
+						ArrayList<String> list = new ArrayList<String>();
+						list=menu.getTextArea();
+						int k = 1, Countlinha = 1;
+						String linha = "";
 					}
 				});
 			}
@@ -86,6 +67,5 @@ public class Principal {
 						UIManager.put(key, f);
 				}
 			}
-	
 
 }
