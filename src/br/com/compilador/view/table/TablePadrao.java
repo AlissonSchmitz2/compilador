@@ -1,4 +1,4 @@
-package br.com.compilador.view;
+package br.com.compilador.view.table;
 
 import java.awt.Point;
 import java.awt.Rectangle;

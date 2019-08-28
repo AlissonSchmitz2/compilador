@@ -1,7 +1,6 @@
 package br.com.compilador.teste;
 
 import java.awt.Font;
-import java.util.ArrayList;
 import java.util.Enumeration;
 
 import javax.swing.UIManager;
@@ -50,10 +49,6 @@ public class Principal {
 
 						PrincipalFormView menu = new PrincipalFormView();
 						menu.setVisible(true);
-						ArrayList<String> list = new ArrayList<String>();
-						list=menu.getTextArea();
-						int k = 1, Countlinha = 1;
-						String linha = "";
 					}
 				});
 			}
