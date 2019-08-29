@@ -16,8 +16,11 @@ public final class MasterImage extends ImageIcon{
 	executar = LoadImage("play.png");
 
 	public static final MasterImage
-	sair = LoadImage("sair.png");
+	debug = LoadImage("debug.png");
 	
+	public static final MasterImage
+	sair = LoadImage("sair.png");
+
 	private MasterImage(final String titulo) {
 		super(MasterImage.class.getResource(titulo));
 	}

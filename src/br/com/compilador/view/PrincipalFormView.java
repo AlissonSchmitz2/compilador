@@ -132,7 +132,7 @@ public class PrincipalFormView extends JFrame {
 		btnExecutar = new JButton("Executar", MasterImage.executar);
 		btnExecutar.setFocusable(false);
 
-		btnDebug = new JButton("Debug", null);
+		btnDebug = new JButton("Debug", MasterImage.debug);
 		btnDebug.setFocusable(false);
 
 		btnSair = new JButton("Sair", MasterImage.sair);
@@ -160,6 +160,7 @@ public class PrincipalFormView extends JFrame {
 		textAreaConsole = new JTextArea();
 		textAreaConsole.setBackground(new Color(221, 221, 221));
 		textAreaConsole.setFont(getDefaultFont());
+		textAreaConsole.setEditable(false);
 		tabPaneConsole.addTab("Console", MasterImage.monitor, textAreaConsole, "");
 		tabPaneConsole.setEnabledAt(0, true);
 
