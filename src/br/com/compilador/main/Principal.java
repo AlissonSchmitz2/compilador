@@ -1,4 +1,4 @@
-package br.com.compilador.teste;
+package br.com.compilador.main;
 
 import java.awt.Font;
 import java.util.Enumeration;
@@ -46,9 +46,7 @@ public class Principal {
 				java.awt.EventQueue.invokeLater(new Runnable() {
 
 					public void run() {
-
-						PrincipalFormView menu = new PrincipalFormView();
-						menu.setVisible(true);
+						new PrincipalFormView().setVisible(true);
 					}
 				});
 			}

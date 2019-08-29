@@ -1,29 +1,34 @@
-package br.com.compilador.teste;
+package br.com.compilador.main;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.Stack;
 
 import br.com.compilador.token.Tokens;
 
 
 public class AnalisadorLexico {
-	public static int contIni;
-	public static int contFin;
 
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(
-				"C:\\Users\\eduar\\Desktop\\compilador\\Exemplos\\Exemplo1.txt"));
-		Tokens tokens = new Tokens();
-		String linha;
-		String palavras = "";
-		char c2 = ' ', c= ' ';
-		boolean comentario = false, literal = false;
-		int numLinha = -1;
-		Pilha p;
-		Stack<Pilha> simbolos = new Stack<Pilha>();
-
+	private Tokens tokens = new Tokens();
+	private String linha;
+	private String palavras = "";
+	private char c2 = ' ', c= ' ';
+	private boolean comentario = false, literal = false;
+	private int numLinha = 0;
+	private Pilha p;
+	private Stack<Pilha> simbolos = new Stack<Pilha>();
+	
+	public AnalisadorLexico() {
+	}
+	
+	public Stack<Pilha> analisar(String texto) throws IOException  {
+		simbolos.removeAllElements();
+		numLinha = 0;
+		Reader inputString = new StringReader(texto);
+		BufferedReader br = new BufferedReader(inputString);
+		
 		while ((linha = br.readLine()) != null) {
 			numLinha++;
 			char linhaArray[] = linha.toCharArray();
@@ -52,6 +57,7 @@ public class AnalisadorLexico {
 				}
 				if(comentario) {
 					continue;
+					
 				}
 
 				//tratamento do livreral 'meu nome é julia' 
@@ -106,6 +112,8 @@ public class AnalisadorLexico {
 
 					}
 					System.out.println(palavras);
+					p = new Pilha(26, numLinha, palavras);
+					simbolos.add(p);
 					palavras = "";
 					
 					//caractere vazio
@@ -135,7 +143,11 @@ public class AnalisadorLexico {
 		}
 
 		br.close();
+		return simbolos;
 	}
+//	public static void main(String[] args) throws IOException {
+		
+//	}
 
 	public static boolean letra(char c) {
 		if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_') {

@@ -4,11 +4,16 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Stack;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -16,8 +21,12 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import br.com.compilador.image.MasterImage;
+import br.com.compilador.main.AnalisadorLexico;
+import br.com.compilador.main.Pilha;
+import br.com.compilador.manipularArquivo.ManipularArquivo;
 import br.com.compilador.view.table.TableAnalisadorLexico;
 
 public class PrincipalFormView extends JFrame {
@@ -30,6 +39,10 @@ public class PrincipalFormView extends JFrame {
 	private JButton btnAbrir, btnExecutar, btnDebug, btnSair;
 	private TableAnalisadorLexico table;
 	private JTabbedPane tabPaneConsole;
+	private JFileChooser fileChooser;
+	private File arquivoFileChooser;
+	private AnalisadorLexico analisadorLexico = new AnalisadorLexico();
+	private Stack<Pilha> simbolos = new Stack<Pilha>();
 
 	public PrincipalFormView() {
 		setTitle("Compilador LMS v1.0.0-betha");
@@ -41,10 +54,62 @@ public class PrincipalFormView extends JFrame {
 		criarComponentes();
 		acoesComponentes();
 	}
-	
-	private void acoesComponentes () {
+
+	private void acoesComponentes() {
+		btnAbrir.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				fileChooser = new JFileChooser();
+		        fileChooser.setDialogTitle("Selecione o arquivo para converter");
+		        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY); //Apenas arquivos
+		        
+		        FileNameExtensionFilter filter = new FileNameExtensionFilter("Teste teste(*.txt)", "txt");
+		        fileChooser.setFileFilter(filter);
+		        
+		        int retorno = fileChooser.showOpenDialog(PrincipalFormView.this);
+		        
+		        if(retorno == JFileChooser.APPROVE_OPTION){
+		            arquivoFileChooser = fileChooser.getSelectedFile();
+		            try {
+						new ManipularArquivo();
+						StringBuilder texto = ManipularArquivo.lerArquivo(arquivoFileChooser.getAbsolutePath());
+						textAreaPrincipal.setText("");
+						textAreaPrincipal.append(texto.toString());
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+		            
+		        }else{
+		            System.out.println("CANCELOU A SELEÇÃO DO ARQUIVO");
+		        }
+			}
+		});
+		
+		btnExecutar.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				table.limparTabela();
+				try {
+					simbolos = analisadorLexico.analisar(textAreaPrincipal.getText());
+					
+					
+					for(Pilha p : simbolos) {
+						table.adicionarLinha(new Object[] { p.getCodigo(), p.getSimbolo(), p.getLinha() });
+					}
+					table.selecionaPrimeiraLinha();
+					simbolos = null;
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
 		btnSair.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				System.exit(0);
@@ -86,10 +151,6 @@ public class PrincipalFormView extends JFrame {
 		painelPrincipal.add(table);
 		scrollTableAnalisadorLexico = new JScrollPane(table);
 		scrollTableAnalisadorLexico.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		// Teste
-		for (int i = 0; i < 20; i++) {
-			table.adicionarLinha(new Object[] { 3, 4, 5 });
-		}
 
 		// Aba Console e TextArea
 		tabPaneConsole = new JTabbedPane(JTabbedPane.TOP);

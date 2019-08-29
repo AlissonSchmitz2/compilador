@@ -1,4 +1,4 @@
-package br.com.compilador.teste;
+package br.com.compilador.main;
 
 public class Pilha {
 	
