@@ -5,9 +5,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Stack;
 
 import javax.swing.GroupLayout;
@@ -26,10 +24,12 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import br.com.compilador.image.MasterImage;
 import br.com.compilador.main.AnalisadorLexico;
 import br.com.compilador.main.Pilha;
-import br.com.compilador.manipularArquivo.ManipularArquivo;
+import br.com.compilador.util.ManipularArquivo;
+import br.com.compilador.util.Msg;
+import br.com.compilador.util.TextLineNumber;
 import br.com.compilador.view.table.TableAnalisadorLexico;
 
-public class PrincipalFormView extends JFrame {
+public class PrincipalForm extends JFrame {
 	private static final long serialVersionUID = -4121820897834715812L;
 
 	private JPanel painelPrincipal, painelBotoes;
@@ -43,8 +43,9 @@ public class PrincipalFormView extends JFrame {
 	private File arquivoFileChooser;
 	private AnalisadorLexico analisadorLexico = new AnalisadorLexico();
 	private Stack<Pilha> simbolos = new Stack<Pilha>();
+	private boolean ativo = true;
 
-	public PrincipalFormView() {
+	public PrincipalForm() {
 		setTitle("Compilador LMS v1.0.0-betha");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1091, 581);
@@ -61,55 +62,68 @@ public class PrincipalFormView extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				fileChooser = new JFileChooser();
-		        fileChooser.setDialogTitle("Selecione o arquivo para converter");
-		        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY); //Apenas arquivos
-		        
-		        FileNameExtensionFilter filter = new FileNameExtensionFilter("Teste teste(*.txt)", "txt");
-		        fileChooser.setFileFilter(filter);
-		        
-		        int retorno = fileChooser.showOpenDialog(PrincipalFormView.this);
-		        
-		        if(retorno == JFileChooser.APPROVE_OPTION){
-		            arquivoFileChooser = fileChooser.getSelectedFile();
-		            try {
+				fileChooser.setDialogTitle("Selecione o arquivo para converter");
+				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY); // Apenas arquivos
+
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("Teste teste(*.txt)", "txt");
+				fileChooser.setFileFilter(filter);
+
+				int retorno = fileChooser.showOpenDialog(PrincipalForm.this);
+
+				if (retorno == JFileChooser.APPROVE_OPTION) {
+					arquivoFileChooser = fileChooser.getSelectedFile();
+					try {
 						new ManipularArquivo();
 						StringBuilder texto = ManipularArquivo.lerArquivo(arquivoFileChooser.getAbsolutePath());
 						textAreaPrincipal.setText("");
 						textAreaPrincipal.append(texto.toString());
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
 					} catch (IOException e) {
-						e.printStackTrace();
+						new Msg().mensagemErro("Problema ao ler arquivo selecionado!");
 					}
-		            
-		        }else{
-		            System.out.println("CANCELOU A SELEÃ‡ÃƒO DO ARQUIVO");
-		        }
+
+				} else {
+					new Msg().mensagemAviso("Cancelou a seleção do arquivo.");
+				}
 			}
 		});
-		
-		btnExecutar.addActionListener(new ActionListener() {
 
+		btnExecutar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				table.limparTabela();
 				try {
 					simbolos = analisadorLexico.analisar(textAreaPrincipal.getText());
-					
-					
-					for(Pilha p : simbolos) {
+					for (Pilha p : simbolos) {
 						table.adicionarLinha(new Object[] { p.getCodigo(), p.getSimbolo(), p.getLinha() });
 					}
 					table.selecionaPrimeiraLinha();
-					simbolos = null;
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 		});
 
-		btnSair.addActionListener(new ActionListener() {
+		btnDebug.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (ativo) {
+					painelPrincipal.remove(table);
+					painelPrincipal.remove(scrollTableAnalisadorLexico);
+					painelPrincipal.repaint();
+					painelPrincipal.revalidate();
+					ativo = false;
+				} else {
+					painelPrincipal.add(table);
+					painelPrincipal.add(scrollTableAnalisadorLexico);
+					painelPrincipal.repaint();
+					painelPrincipal.revalidate();
+					ativo = true;
+				}
 
+			}
+		});
+
+		btnSair.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				System.exit(0);
@@ -165,22 +179,23 @@ public class PrincipalFormView extends JFrame {
 		tabPaneConsole.setEnabledAt(0, true);
 
 		GroupLayout gl_painel = new GroupLayout(painelPrincipal);
-		gl_painel.setHorizontalGroup(gl_painel.createParallelGroup(Alignment.TRAILING).addGroup(gl_painel
-				.createSequentialGroup().addContainerGap()
-				.addGroup(gl_painel.createParallelGroup(Alignment.LEADING)
-						.addGroup(Alignment.TRAILING, gl_painel.createSequentialGroup()
-								.addComponent(scrollPaneTextCompilador, GroupLayout.DEFAULT_SIZE, 814, Short.MAX_VALUE)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(scrollTableAnalisadorLexico, GroupLayout.PREFERRED_SIZE, 235,
-										GroupLayout.PREFERRED_SIZE)
-								.addContainerGap())
-						.addGroup(Alignment.TRAILING,
-								gl_painel.createSequentialGroup()
-										.addComponent(tabPaneConsole, GroupLayout.DEFAULT_SIZE, 802, Short.MAX_VALUE)
-										.addGap(263))
-						.addGroup(gl_painel.createSequentialGroup()
-								.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, 435, GroupLayout.PREFERRED_SIZE)
-								.addContainerGap(630, Short.MAX_VALUE)))));
+		gl_painel
+				.setHorizontalGroup(gl_painel.createParallelGroup(Alignment.TRAILING)
+						.addGroup(gl_painel.createSequentialGroup().addContainerGap()
+								.addGroup(gl_painel.createParallelGroup(Alignment.TRAILING).addGroup(gl_painel
+										.createSequentialGroup()
+										.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, 435,
+												GroupLayout.PREFERRED_SIZE)
+										.addContainerGap(630, Short.MAX_VALUE))
+										.addGroup(gl_painel.createSequentialGroup()
+												.addGroup(gl_painel.createParallelGroup(Alignment.TRAILING)
+														.addComponent(scrollPaneTextCompilador,
+																GroupLayout.DEFAULT_SIZE, 802, Short.MAX_VALUE)
+														.addComponent(tabPaneConsole, GroupLayout.DEFAULT_SIZE, 802,
+																Short.MAX_VALUE))
+												.addGap(18).addComponent(scrollTableAnalisadorLexico,
+														GroupLayout.PREFERRED_SIZE, 235, GroupLayout.PREFERRED_SIZE)
+												.addContainerGap()))));
 		gl_painel.setVerticalGroup(gl_painel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_painel.createSequentialGroup().addContainerGap()
 						.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
@@ -190,7 +205,7 @@ public class PrincipalFormView extends JFrame {
 										GroupLayout.PREFERRED_SIZE)
 								.addComponent(scrollPaneTextCompilador, GroupLayout.PREFERRED_SIZE, 354,
 										GroupLayout.PREFERRED_SIZE))
-						.addGap(18).addComponent(tabPaneConsole, GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
+						.addGap(18).addComponent(tabPaneConsole, GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
 						.addContainerGap()));
 
 		GroupLayout gl_panel = new GroupLayout(painelBotoes);
@@ -211,18 +226,6 @@ public class PrincipalFormView extends JFrame {
 						.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 		painelBotoes.setLayout(gl_panel);
 		painelPrincipal.setLayout(gl_painel);
-	}
-
-	public ArrayList<String> getTextArea() {
-		ArrayList<String> lista = new ArrayList<>();
-		String texto = textAreaPrincipal.getText();
-		String[] aux;
-		aux = texto.split("\n");
-		for (int i = 0; i < aux.length; i++) {
-			lista.add(aux[i]);
-			System.out.println(lista.get(i));
-		}
-		return lista;
 	}
 
 	private Font getDefaultFont() {

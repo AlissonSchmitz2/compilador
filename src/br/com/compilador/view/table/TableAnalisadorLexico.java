@@ -13,8 +13,6 @@ public class TableAnalisadorLexico extends TablePadrao {
 	private DefaultTableModel model;
 	
 	public TableAnalisadorLexico() {
-		
-
 		model = new DefaultTableModel(null, colunas) {
 			private static final long serialVersionUID = 3263923956276898672L;
 
@@ -27,7 +25,5 @@ public class TableAnalisadorLexico extends TablePadrao {
 		setBorder(BorderFactory.createLineBorder(Color.black));
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		setVisible(true);
-		
 	}
-	
 }

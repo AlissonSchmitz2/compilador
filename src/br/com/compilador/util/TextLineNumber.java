@@ -1,4 +1,4 @@
-package br.com.compilador.view;
+package br.com.compilador.util;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -29,17 +29,13 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.Utilities;
 
-
 public class TextLineNumber extends JPanel implements CaretListener, DocumentListener, PropertyChangeListener {
-
-    private static final long serialVersionUID = 1;
-
-    public final static float LEFT = 0.0f;
+	private static final long serialVersionUID = 58363832942315105L;
+	
+	public final static float LEFT = 0.0f;
     public final static float CENTER = 0.5f;
     public final static float RIGHT = 1.0f;
-
     private final static Border OUTER = new MatteBorder(0, 0, 0, 2, Color.GRAY);
-
     private final static int HEIGHT = Integer.MAX_VALUE - 1000000;
 
     private JTextComponent component;

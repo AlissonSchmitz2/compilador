@@ -9,13 +9,12 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 public class MyCellRenderer {
-
 	public TableCellRenderer renderer;
-	
+
 	public MyCellRenderer() {
 		renderer = new EvenOddRenderer();
 	}
-	
+
 	public class EvenOddRenderer implements TableCellRenderer {
 		public DefaultTableCellRenderer DEFAULT_RENDERER = new DefaultTableCellRenderer();
 
@@ -40,9 +39,8 @@ public class MyCellRenderer {
 			return renderer;
 		}
 	}
-	
+
 	public TableCellRenderer getMyCellRenderer() {
 		return renderer;
 	}
-	
 }

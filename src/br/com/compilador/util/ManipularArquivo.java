@@ -1,4 +1,4 @@
-package br.com.compilador.manipularArquivo;
+package br.com.compilador.util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,5 +57,4 @@ public class ManipularArquivo {
 		}
 		return result;
 	}
-
 }

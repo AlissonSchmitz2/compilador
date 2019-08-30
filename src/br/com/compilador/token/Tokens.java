@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Tokens {
-
 	public static HashMap<String, Integer> mapTokens = new HashMap<String, Integer>();
 
 	public Tokens() {
@@ -79,7 +78,7 @@ public class Tokens {
 	public String getSimbolo(int cod) {
 		if (mapTokens.containsValue(cod)) {
 			for (Map.Entry<String, Integer> candidatoEntry : mapTokens.entrySet()) {
-				if(candidatoEntry.getValue().equals(cod)) {
+				if (candidatoEntry.getValue().equals(cod)) {
 					return candidatoEntry.getKey();
 				}
 			}
@@ -87,5 +86,4 @@ public class Tokens {
 
 		return null;
 	}
-
 }

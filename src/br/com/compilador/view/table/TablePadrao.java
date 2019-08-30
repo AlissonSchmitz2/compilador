@@ -10,10 +10,6 @@ import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
-/**
- *
- * @author aa
- */
 public class TablePadrao extends JTable {
 	private static final long serialVersionUID = -1460232083708245880L;
 
@@ -183,6 +179,5 @@ public class TablePadrao extends JTable {
 //    public void addBotao(JButton botao, int indiceColuna) {
 //        new TablePadraoButtonColumn(this, indiceColuna, botao);
 //    }
-
 }
 

@@ -1,12 +1,10 @@
 package br.com.compilador.main;
 
 public class Pilha {
+	private int codigo, linha;
+	private String simbolo;
 	
-	int codigo;
-	int linha;
-	String simbolo;
-	
-	Pilha(int codigo, int linha, String simbolo){
+	public Pilha(int codigo, int linha, String simbolo){
 		this.codigo = codigo;
 		this.simbolo = simbolo;
 		this.linha = linha;
