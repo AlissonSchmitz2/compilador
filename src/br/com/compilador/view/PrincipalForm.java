@@ -43,7 +43,7 @@ public class PrincipalForm extends JFrame {
 	private File arquivoFileChooser;
 	private AnalisadorLexico analisadorLexico = new AnalisadorLexico();
 	private Stack<Pilha> simbolos = new Stack<Pilha>();
-	private boolean ativo = true;
+	private boolean ativo = false;
 
 	public PrincipalForm() {
 		setTitle("Compilador LMS v1.0.0-betha");
@@ -107,19 +107,15 @@ public class PrincipalForm extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (ativo) {
-					painelPrincipal.remove(table);
-					painelPrincipal.remove(scrollTableAnalisadorLexico);
-					painelPrincipal.repaint();
-					painelPrincipal.revalidate();
 					ativo = false;
 				} else {
-					painelPrincipal.add(table);
-					painelPrincipal.add(scrollTableAnalisadorLexico);
-					painelPrincipal.repaint();
-					painelPrincipal.revalidate();
 					ativo = true;
 				}
-
+				
+				table.setVisible(ativo);
+				scrollTableAnalisadorLexico.setVisible(ativo);
+				painelPrincipal.repaint();
+				painelPrincipal.revalidate();
 			}
 		});
 
@@ -163,8 +159,10 @@ public class PrincipalForm extends JFrame {
 		// Tabela do Analisador Lexico
 		table = new TableAnalisadorLexico();
 		painelPrincipal.add(table);
+		table.setVisible(false);
 		scrollTableAnalisadorLexico = new JScrollPane(table);
 		scrollTableAnalisadorLexico.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollTableAnalisadorLexico.setVisible(false);
 
 		// Aba Console e TextArea
 		tabPaneConsole = new JTabbedPane(JTabbedPane.TOP);
