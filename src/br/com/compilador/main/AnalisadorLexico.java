@@ -76,17 +76,28 @@ public class AnalisadorLexico {
 				// Letras
 				else if (!literal && letra(linhaArray[i])) {
 					palavras += linhaArray[i];
-					c2 = linhaArray[i + 1];
+					
+					try {
+						c2 = linhaArray[i + 1];
+					} catch (Exception e1) {
+//						e1.printStackTrace();
+					}
+					
 
 					while (letra(c2) || digito(c2)) {
 						i++;
-						palavras += linhaArray[i];
+						try {
+							palavras += linhaArray[i];
+						}catch (Exception e) {
+							// TODO: handle exception
+						}
+						
 						c2 = ' ';
 						if (i + 1 < linhaArray.length)
 							c2 = linhaArray[i + 1];
 					}
 
-					p = new Pilha(tokens.getCodToken(palavras), numLinha, palavras);
+					p = new Pilha(tokens.getCodToken(palavras.toUpperCase()), numLinha, palavras);
 					simbolos.add(p);
 					palavras = "";
 
@@ -119,7 +130,7 @@ public class AnalisadorLexico {
 //							e.printStackTrace();
 					}
 
-					p = new Pilha(tokens.getCodToken(palavras), numLinha, palavras);
+					p = new Pilha(tokens.getCodToken(palavras.toUpperCase()), numLinha, palavras);
 					simbolos.add(p);
 					palavras = "";
 				}
