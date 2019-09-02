@@ -66,7 +66,7 @@ public class AnalisadorLexico {
 
 				} else if (literal && linhaArray[i] == '\'') {
 					palavras += linhaArray[i];
-					i++;
+//					i++;
 					p = new Pilha(48, numLinha, palavras);
 					simbolos.add(p);
 					palavras = "";

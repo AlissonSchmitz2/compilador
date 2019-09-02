@@ -65,11 +65,8 @@ public class Tokens {
 	}
 
 	public int getCodToken(String simbolo) {
-		String simboloAux = simbolo;
-		simboloAux.toUpperCase();
-
-		if (mapTokens.containsKey(simboloAux)) {
-			return mapTokens.get(simbolo);
+		if (mapTokens.containsKey(simbolo.toUpperCase())) {
+			return mapTokens.get(simbolo.toUpperCase());
 		}
 
 		return 25;

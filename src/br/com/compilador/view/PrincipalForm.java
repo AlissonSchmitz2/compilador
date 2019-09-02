@@ -36,14 +36,16 @@ public class PrincipalForm extends JFrame {
 	private JTextArea textAreaPrincipal, textAreaConsole;
 	private JScrollPane scrollPaneTextCompilador, scrollTableAnalisadorLexico;
 	private TextLineNumber bordaCountLinhas;
-	private JButton btnAbrir, btnExecutar, btnDebug, btnSair;
-	private TableAnalisadorLexico table;
+	private JButton btnSalvar, btnExecutar, btnDebug, btnSair;
+	private TableAnalisadorLexico tableAnalisadorLexico;
 	private JTabbedPane tabPaneConsole;
 	private JFileChooser fileChooser;
 	private File arquivoFileChooser;
 	private AnalisadorLexico analisadorLexico = new AnalisadorLexico();
 	private Stack<Pilha> simbolos = new Stack<Pilha>();
 	private boolean ativo = false;
+	private JButton btnNovo;
+	private JButton btnAbrir;
 
 	public PrincipalForm() {
 		setTitle("Compilador LMS v1.0.0-betha");
@@ -57,20 +59,27 @@ public class PrincipalForm extends JFrame {
 	}
 
 	private void acoesComponentes() {
-		btnAbrir.addActionListener(new ActionListener() {
-
+		
+		btnNovo.addActionListener(new ActionListener() {
+			
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent e) {
+				textAreaPrincipal.setText("");
+				tableAnalisadorLexico.limparTabela();
+			}
+		});
+		
+		btnAbrir.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent ee) {
 				fileChooser = new JFileChooser();
-				fileChooser.setDialogTitle("Selecione o arquivo para converter");
+				fileChooser.setDialogTitle("Selecione o arquivo");
 				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY); // Apenas arquivos
 
-				FileNameExtensionFilter filter = new FileNameExtensionFilter("Teste teste(*.txt)", "txt");
-				fileChooser.setFileFilter(filter);
+				fileChooser.setFileFilter(new FileNameExtensionFilter("Arquivo Código(*.txt)", "txt"));
 
-				int retorno = fileChooser.showOpenDialog(PrincipalForm.this);
-
-				if (retorno == JFileChooser.APPROVE_OPTION) {
+				if (fileChooser.showOpenDialog(PrincipalForm.this) == JFileChooser.APPROVE_OPTION) {
 					arquivoFileChooser = fileChooser.getSelectedFile();
 					try {
 						new ManipularArquivo();
@@ -82,7 +91,44 @@ public class PrincipalForm extends JFrame {
 					}
 
 				} else {
-					new Msg().mensagemAviso("Cancelou a seleção do arquivo.");
+					new Msg().mensagemAviso("Seleção do arquivo cancelada!");
+				}
+				
+			}
+		});
+		
+		btnSalvar.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				fileChooser = new JFileChooser();
+				fileChooser.setDialogTitle("Selecione a pasta");
+				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY); 
+				
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("Teste teste(*.txt)", "txt");
+				fileChooser.setFileFilter(filter);
+
+				fileChooser.setFileFilter(new FileNameExtensionFilter("Arquivo Código(*.txt)", "txt"));
+
+				if (fileChooser.showSaveDialog(PrincipalForm.this) == JFileChooser.APPROVE_OPTION) {
+					arquivoFileChooser = fileChooser.getSelectedFile();
+					String caminhoArquivo = arquivoFileChooser.getAbsolutePath();
+					
+					if(!caminhoArquivo.endsWith(".txt")) {
+						caminhoArquivo += ".txt";
+					}
+					
+					try {
+						new ManipularArquivo();
+						ManipularArquivo.gravarArquivo(caminhoArquivo, textAreaPrincipal.getText());
+						
+						new Msg().mensagemSucesso("Arquivo Salvo com Sucesso!");
+					} catch (IOException e) {
+						new Msg().mensagemErro("Problema ao gravar arquivo!");
+					}
+
+				} else {
+					new Msg().mensagemAviso("Salvamento cancelado!");
 				}
 			}
 		});
@@ -90,13 +136,13 @@ public class PrincipalForm extends JFrame {
 		btnExecutar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				table.limparTabela();
+				tableAnalisadorLexico.limparTabela();
 				try {
 					simbolos = analisadorLexico.analisar(textAreaPrincipal.getText());
 					for (Pilha p : simbolos) {
-						table.adicionarLinha(new Object[] { p.getCodigo(), p.getSimbolo(), p.getLinha() });
+						tableAnalisadorLexico.adicionarLinha(new Object[] { p.getCodigo(), p.getSimbolo(), p.getLinha() });
 					}
-					table.selecionaPrimeiraLinha();
+					tableAnalisadorLexico.selecionaPrimeiraLinha();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -112,7 +158,7 @@ public class PrincipalForm extends JFrame {
 					ativo = true;
 				}
 				
-				table.setVisible(ativo);
+				tableAnalisadorLexico.setVisible(ativo);
 				scrollTableAnalisadorLexico.setVisible(ativo);
 				painelPrincipal.repaint();
 				painelPrincipal.revalidate();
@@ -136,8 +182,15 @@ public class PrincipalForm extends JFrame {
 		painelBotoes = new JPanel();
 
 		// Botões principais
-		btnAbrir = new JButton("Abrir", MasterImage.pasta_22x22);
+		
+		btnNovo = new JButton("Novo", MasterImage.novo);
+		btnNovo.setFocusable(false);
+		
+		btnAbrir = new JButton("Abrir", MasterImage.abrir);
 		btnAbrir.setFocusable(false);
+		
+		btnSalvar = new JButton("Salvar", MasterImage.salvar);
+		btnSalvar.setFocusable(false);
 
 		btnExecutar = new JButton("Executar", MasterImage.executar);
 		btnExecutar.setFocusable(false);
@@ -157,10 +210,10 @@ public class PrincipalForm extends JFrame {
 		scrollPaneTextCompilador.setRowHeaderView(bordaCountLinhas);
 
 		// Tabela do Analisador Lexico
-		table = new TableAnalisadorLexico();
-		painelPrincipal.add(table);
-		table.setVisible(false);
-		scrollTableAnalisadorLexico = new JScrollPane(table);
+		tableAnalisadorLexico = new TableAnalisadorLexico();
+		painelPrincipal.add(tableAnalisadorLexico);
+		tableAnalisadorLexico.setVisible(false);
+		scrollTableAnalisadorLexico = new JScrollPane(tableAnalisadorLexico);
 		scrollTableAnalisadorLexico.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollTableAnalisadorLexico.setVisible(false);
 
@@ -177,51 +230,63 @@ public class PrincipalForm extends JFrame {
 		tabPaneConsole.setEnabledAt(0, true);
 
 		GroupLayout gl_painel = new GroupLayout(painelPrincipal);
-		gl_painel
-				.setHorizontalGroup(gl_painel.createParallelGroup(Alignment.TRAILING)
-						.addGroup(gl_painel.createSequentialGroup().addContainerGap()
-								.addGroup(gl_painel.createParallelGroup(Alignment.TRAILING).addGroup(gl_painel
-										.createSequentialGroup()
-										.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, 435,
-												GroupLayout.PREFERRED_SIZE)
-										.addContainerGap(630, Short.MAX_VALUE))
-										.addGroup(gl_painel.createSequentialGroup()
-												.addGroup(gl_painel.createParallelGroup(Alignment.TRAILING)
-														.addComponent(scrollPaneTextCompilador,
-																GroupLayout.DEFAULT_SIZE, 802, Short.MAX_VALUE)
-														.addComponent(tabPaneConsole, GroupLayout.DEFAULT_SIZE, 802,
-																Short.MAX_VALUE))
-												.addGap(18).addComponent(scrollTableAnalisadorLexico,
-														GroupLayout.PREFERRED_SIZE, 235, GroupLayout.PREFERRED_SIZE)
-												.addContainerGap()))));
-		gl_painel.setVerticalGroup(gl_painel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_painel.createSequentialGroup().addContainerGap()
-						.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addGroup(gl_painel.createParallelGroup(Alignment.BASELINE)
-								.addComponent(scrollTableAnalisadorLexico, GroupLayout.PREFERRED_SIZE, 354,
-										GroupLayout.PREFERRED_SIZE)
-								.addComponent(scrollPaneTextCompilador, GroupLayout.PREFERRED_SIZE, 354,
-										GroupLayout.PREFERRED_SIZE))
-						.addGap(18).addComponent(tabPaneConsole, GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
-						.addContainerGap()));
-
+		gl_painel.setHorizontalGroup(
+			gl_painel.createParallelGroup(Alignment.TRAILING)
+				.addGroup(Alignment.LEADING, gl_painel.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_painel.createParallelGroup(Alignment.LEADING)
+						.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, 658, GroupLayout.PREFERRED_SIZE)
+						.addGroup(gl_painel.createSequentialGroup()
+							.addGroup(gl_painel.createParallelGroup(Alignment.TRAILING)
+								.addComponent(scrollPaneTextCompilador, GroupLayout.DEFAULT_SIZE, 802, Short.MAX_VALUE)
+								.addComponent(tabPaneConsole, GroupLayout.DEFAULT_SIZE, 802, Short.MAX_VALUE))
+							.addGap(18)
+							.addComponent(scrollTableAnalisadorLexico, GroupLayout.PREFERRED_SIZE, 235, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap())
+		);
+		gl_painel.setVerticalGroup(
+			gl_painel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_painel.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_painel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(scrollTableAnalisadorLexico, GroupLayout.PREFERRED_SIZE, 354, GroupLayout.PREFERRED_SIZE)
+						.addComponent(scrollPaneTextCompilador, GroupLayout.PREFERRED_SIZE, 354, GroupLayout.PREFERRED_SIZE))
+					.addGap(18)
+					.addComponent(tabPaneConsole, GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
+					.addContainerGap())
+		);
+		
 		GroupLayout gl_panel = new GroupLayout(painelBotoes);
-		gl_panel.setHorizontalGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup().addComponent(btnAbrir)
-						.addPreferredGap(ComponentPlacement.RELATED).addComponent(btnExecutar)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(btnDebug, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(btnSair, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE)
-						.addContainerGap(31, Short.MAX_VALUE)));
-		gl_panel.setVerticalGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+		gl_panel.setHorizontalGroup(
+			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
-						.addGroup(gl_panel.createParallelGroup(Alignment.LEADING).addComponent(btnAbrir)
-								.addComponent(btnExecutar, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnDebug, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnSair, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
-						.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+					.addComponent(btnNovo, GroupLayout.PREFERRED_SIZE, 83, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnAbrir, GroupLayout.PREFERRED_SIZE, 83, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnSalvar)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnExecutar)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnDebug, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnSair, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(70, Short.MAX_VALUE))
+		);
+		gl_panel.setVerticalGroup(
+			gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
+						.addComponent(btnNovo, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
+						.addComponent(btnAbrir, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
+						.addComponent(btnExecutar, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
+						.addComponent(btnDebug, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
+						.addComponent(btnSair, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
+						.addComponent(btnSalvar, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+		);
 		painelBotoes.setLayout(gl_panel);
 		painelPrincipal.setLayout(gl_painel);
 	}

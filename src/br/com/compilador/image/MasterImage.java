@@ -6,12 +6,14 @@ public final class MasterImage extends ImageIcon {
 	private static final long serialVersionUID = -1243931450819789591L;
 
 	// 22x22
-	public static final MasterImage pasta_22x22 = LoadImage("22x22/pasta_criar.png");
-
+	public static final MasterImage novo = LoadImage("22x22/novo.png");
+	public static final MasterImage abrir = LoadImage("22x22/pasta_criar.png");
+	public static final MasterImage salvar = LoadImage("22x22/salvar.png");
+	
 	public static final MasterImage monitor = LoadImage("monitor.png");
 	public static final MasterImage executar = LoadImage("play.png");
 	public static final MasterImage debug = LoadImage("debug.png");
-	public static final MasterImage sair = LoadImage("sair.png");
+	public static final MasterImage sair = LoadImage("sair.png");	
 
 	private MasterImage(final String titulo) {
 		super(MasterImage.class.getResource(titulo));
