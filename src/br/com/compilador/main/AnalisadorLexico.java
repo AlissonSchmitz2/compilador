@@ -13,7 +13,7 @@ public class AnalisadorLexico {
 	private Tokens tokens = new Tokens();
 	private String linha, palavras = "";
 	private char c2 = ' ', c = ' ';
-	private boolean comentario = false, literal = false;
+	private boolean comentario = false, literal = false, freio = false;
 	private int numLinha = 0;
 	private Pilha p;
 	private Stack<Pilha> simbolos = new Stack<Pilha>();
@@ -33,7 +33,11 @@ public class AnalisadorLexico {
 		while ((linha = br.readLine()) != null) {
 			numLinha++;
 			char linhaArray[] = linha.toCharArray();
-
+			if(freio) {
+				freio = false;
+				break;
+			}
+			
 			for (int i = 0; i < linhaArray.length; i++) {
 
 				c = linhaArray[i];
@@ -41,6 +45,13 @@ public class AnalisadorLexico {
 					c2 = linhaArray[i + 1];
 				} catch (Exception e1) {
 //					e1.printStackTrace();
+				}
+				//tratamento de acento
+				
+				if(acento(c)) {
+					System.out.println("erro na linha "+ numLinha);
+					freio = true;
+					break;
 				}
 
 				// Tratamento de Comentários com uma ou mais de uma linha
@@ -71,7 +82,8 @@ public class AnalisadorLexico {
 					simbolos.add(p);
 					palavras = "";
 					literal = false;
-				}
+				}//
+					
 
 				// Letras
 				else if (!literal && letra(linhaArray[i])) {
@@ -171,4 +183,14 @@ public class AnalisadorLexico {
 		}
 		return false;
 	}
+	
+	public static boolean acento(char c) {
+		for(int i = 192; i < 256; i++) {
+			if((int)c == i)
+				return true;
+		}
+		
+		return false;
+	}
+		
 }
