@@ -1,4 +1,4 @@
-package br.com.compilador.token;
+package br.com.compilador.hashmaps;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -6,7 +6,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Stack;
 
-import br.com.compilador.token.Tokens;
+import br.com.compilador.hashmaps.Tokens;
 
 public class AnalisadorLexico {
 
@@ -14,30 +14,53 @@ public class AnalisadorLexico {
 	private String linha, palavras = "";
 	private char c2 = ' ', c = ' ';
 	private boolean comentario = false, literal = false, freio = false;
-	private int numLinha = 0;
+	private int numLinha = 0, numComentario = 0, numLiteral = 0;
 	private Pilha p;
 	private Stack<Pilha> simbolos = new Stack<Pilha>();
+	private Stack<PilhaErros> pilhaErros = new Stack<PilhaErros>();
 	private Reader inputString;
 	private BufferedReader br;
 
 	public AnalisadorLexico() {
 	}
-
+	
+	public Stack<PilhaErros> getErros(){
+		
+		if(!pilhaErros.isEmpty()) {
+		
+		return pilhaErros;
+		}
+		
+		return null;
+	}
+	
 	public Stack<Pilha> analisar(String texto) throws IOException {
 		inputString = new StringReader(texto);
 		br = new BufferedReader(inputString);
-
+		pilhaErros.removeAllElements();
 		simbolos.removeAllElements();
 		numLinha = 0;
 
 		while ((linha = br.readLine()) != null) {
-			numLinha++;
-			char linhaArray[] = linha.toCharArray();
+			
+			// erro literal com mais de uma linha
+			if(literal) {
+				literal = false;
+				pilhaErros.add(new PilhaErros(3, numLiteral));
+				break;
+			}
+			
+			//finalizar while quando sai do for
 			if(freio) {
 				freio = false;
 				break;
 			}
 			
+			//inicio variaveis usadas
+			numLinha++;
+			char linhaArray[] = linha.toCharArray();
+			
+			//for que passa por cada elemento
 			for (int i = 0; i < linhaArray.length; i++) {
 
 				c = linhaArray[i];
@@ -48,19 +71,20 @@ public class AnalisadorLexico {
 				}
 				//tratamento de acento
 				
-				if(acento(c)) {
-					System.out.println("erro na linha "+ numLinha);
+				if( !literal && !comentario && acento(c)) {
+					pilhaErros.add(new PilhaErros(1, numLinha));
 					freio = true;
 					break;
 				}
 
 				// Tratamento de Comentários com uma ou mais de uma linha
-				if (c == '(' && c2 == '*') {
+				if (c == '(' && c2 == '*' && !comentario) {
+					numComentario = numLinha;	
 					comentario = true;
 					i++;
 				}
 				if (comentario && c == '*' && c2 == ')') {
-					i += 2;
+						i += 2;
 					comentario = false;
 					continue;
 				}
@@ -70,6 +94,7 @@ public class AnalisadorLexico {
 
 				// tratamento do literal 'meu nome é julia'
 				if (!literal && linhaArray[i] == '\'') {
+					numLiteral = numLinha;
 					literal = true;
 					palavras += linhaArray[i];
 				} else if (literal && linhaArray[i] != '\'') {
@@ -148,7 +173,12 @@ public class AnalisadorLexico {
 				}
 			}
 		}
-
+		if(literal) {
+			pilhaErros.add(new PilhaErros(3, numLiteral));
+		}
+		if(comentario) {
+			pilhaErros.add(new PilhaErros(2, numComentario));
+		}
 		br.close();
 		return simbolos;
 	}
