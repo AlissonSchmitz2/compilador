@@ -1,20 +1,21 @@
 package br.com.compilador.main;
 
 public class PilhaErros {
-	private int codigo, linha;
+	private String erro;
+	private int linha;
 
-	public PilhaErros(int codigo, int linha) {
+	public String getErro() {
+		return erro;
+	}
+
+	public void setErro(String erro) {
+		this.erro = erro;
+	}
+
+	public PilhaErros(String erro, int linha) {
 		super();
-		this.codigo = codigo;
+		this.erro = erro;
 		this.linha = linha;
-	}
-
-	public int getCodigo() {
-		return codigo;
-	}
-
-	public void setCodigo(int codigo) {
-		this.codigo = codigo;
 	}
 
 	public int getLinha() {

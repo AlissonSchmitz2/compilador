@@ -9,7 +9,6 @@ import java.util.Stack;
 import br.com.compilador.hashmaps.Tokens;
 
 public class AnalisadorLexico {
-
 	private Tokens tokens = new Tokens();
 	private String linha, palavras = "";
 	private char c2 = ' ', c = ' ';
@@ -23,44 +22,44 @@ public class AnalisadorLexico {
 
 	public AnalisadorLexico() {
 	}
-	
-	public Stack<PilhaErros> getErros(){
-		
-		if(!pilhaErros.isEmpty()) {
-		
-		return pilhaErros;
+
+	public Stack<PilhaErros> getErros() {
+
+		if (!pilhaErros.isEmpty()) {
+			return pilhaErros;
 		}
-		
+
 		return null;
 	}
-	
+
 	public Stack<Pilha> analisar(String texto) throws IOException {
 		inputString = new StringReader(texto);
 		br = new BufferedReader(inputString);
 		pilhaErros.removeAllElements();
 		simbolos.removeAllElements();
 		numLinha = 0;
+		palavras ="";
 
 		while ((linha = br.readLine()) != null) {
-			
+
 			// erro literal com mais de uma linha
-			if(literal) {
+			if (literal) {
 				literal = false;
-				pilhaErros.add(new PilhaErros(3, numLiteral));
+				pilhaErros.add(new PilhaErros("Erro de não fechamento de literal na linha ", numLiteral));
 				break;
 			}
-			
-			//finalizar while quando sai do for
-			if(freio) {
+
+			// finalizar while quando sai do for
+			if (freio) {
 				freio = false;
 				break;
 			}
-			
-			//inicio variaveis usadas
+
+			// inicio variaveis usadas
 			numLinha++;
 			char linhaArray[] = linha.toCharArray();
-			
-			//for que passa por cada elemento
+
+			// for que passa por cada elemento
 			for (int i = 0; i < linhaArray.length; i++) {
 
 				c = linhaArray[i];
@@ -69,22 +68,22 @@ public class AnalisadorLexico {
 				} catch (Exception e1) {
 //					e1.printStackTrace();
 				}
-				//tratamento de acento
 				
-				if( !literal && !comentario && acento(c)) {
-					pilhaErros.add(new PilhaErros(1, numLinha));
+				// tratamento de acento
+				if (!literal && !comentario && acento(c)) {
+					pilhaErros.add(new PilhaErros("Erro de caractere inválido na linha ", numLinha));
 					freio = true;
 					break;
 				}
 
 				// Tratamento de Comentários com uma ou mais de uma linha
 				if (c == '(' && c2 == '*' && !comentario) {
-					numComentario = numLinha;	
+					numComentario = numLinha;
 					comentario = true;
 					i++;
 				}
 				if (comentario && c == '*' && c2 == ')') {
-						i += 2;
+					i += 2;
 					comentario = false;
 					continue;
 				}
@@ -103,59 +102,53 @@ public class AnalisadorLexico {
 				} else if (literal && linhaArray[i] == '\'') {
 					palavras += linhaArray[i];
 //					i++;
-					p = new Pilha(48, numLinha, palavras);
-					simbolos.add(p);
-					palavras = "";
+					adicionarPilhaPrincipal(48);
 					literal = false;
-				}//
-					
+				}
 
 				// Letras
 				else if (!literal && letra(linhaArray[i])) {
 					palavras += linhaArray[i];
-					
+
 					try {
 						c2 = linhaArray[i + 1];
 					} catch (Exception e1) {
 //						e1.printStackTrace();
 					}
-					
 
 					while (letra(c2) || digito(c2)) {
 						i++;
 						try {
 							palavras += linhaArray[i];
-						}catch (Exception e) {
+						} catch (Exception e) {
 							// TODO: handle exception
 						}
-						
+
 						c2 = ' ';
 						if (i + 1 < linhaArray.length)
 							c2 = linhaArray[i + 1];
 					}
 
-					p = new Pilha(tokens.getCodToken(palavras.toUpperCase()), numLinha, palavras);
-					simbolos.add(p);
-					palavras = "";
+					adicionarPilhaPrincipal(tokens.getCodToken(palavras.toUpperCase()));
 
 				} else if (!literal && (c == '-' || digito(linhaArray[i]))) {
 					palavras += linhaArray[i];
+					try {
 					c2 = linhaArray[i + 1];
+					}catch (ArrayIndexOutOfBoundsException e) {
+						// TODO: handle exception
+					}
 					while (digito(c2)) {
 						i++;
+						try {
 						palavras += linhaArray[i];
+						}catch (ArrayIndexOutOfBoundsException e) {
+							// TODO: handle exception
+						}
 						c2 = ' ';
 						if (i + 1 < linhaArray.length)
 							c2 = linhaArray[i + 1];
 					}
-					p = new Pilha(26, numLinha, palavras);
-					simbolos.add(p);
-					palavras = "";
-
-					// caractere vazio
-				} else if (!literal && linhaArray[i] == ' ') {
-
-					// simbolos
 				} else if (!literal && (simbolos1Caracter(linhaArray[i]))) {
 					palavras += linhaArray[i];
 					try {
@@ -164,23 +157,28 @@ public class AnalisadorLexico {
 							i++;
 						}
 					} catch (ArrayIndexOutOfBoundsException e) {
-//							e.printStackTrace();
+						//e.printStackTrace();
 					}
-
-					p = new Pilha(tokens.getCodToken(palavras.toUpperCase()), numLinha, palavras);
-					simbolos.add(p);
-					palavras = "";
+					
+					adicionarPilhaPrincipal(tokens.getCodToken(palavras.toUpperCase()));
 				}
 			}
 		}
-		if(literal) {
-			pilhaErros.add(new PilhaErros(3, numLiteral));
+		if (literal) {
+			pilhaErros.add(new PilhaErros("Erro de não fechamento de literal na linha ", numLiteral));
 		}
-		if(comentario) {
-			pilhaErros.add(new PilhaErros(2, numComentario));
+		if (comentario) {
+			pilhaErros.add(new PilhaErros("Erro de não fechamento de comentário na linha ", numComentario));
 		}
+		
 		br.close();
 		return simbolos;
+	}
+	
+	private void adicionarPilhaPrincipal(int token) {
+		p = new Pilha(token, numLinha, palavras);
+		simbolos.add(p);
+		palavras = "";
 	}
 
 	public static boolean letra(char c) {
@@ -213,14 +211,13 @@ public class AnalisadorLexico {
 		}
 		return false;
 	}
-	
+
 	public static boolean acento(char c) {
-		for(int i = 192; i < 256; i++) {
-			if((int)c == i)
+		for (int i = 192; i < 256; i++) {
+			if ((int) c == i)
 				return true;
 		}
-		
+
 		return false;
 	}
-		
 }

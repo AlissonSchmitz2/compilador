@@ -1,4 +1,3 @@
-Exemplo 1: -----------------------------------------------------------------------------------------------
 (*TESTE - Exemplo Válido*)
 PROGRAM TESTE123;
 	LABEL
@@ -78,7 +77,6 @@ BEGIN
 	END;
 END.
 
-Exemplo 2: -----------------------------------------------------------------------------------------------
 (*TESTE - EXEMPLO VÁLIDO*)
 PROGRAM TESTE123;
 VAR x, A, B : INTEGER;
@@ -93,7 +91,6 @@ BEGIN
 
 END.
 
-Exemplo 3: -----------------------------------------------------------------------------------------------
 (*TESTE - Exemplo iválido. O label_a não é válido para a procedure*)
 PROGRAM TESTEPROC2;
 LABEL label_a;
@@ -109,7 +106,6 @@ CALL p(label_a)
 
 END.
 
-Exemplo 4: -----------------------------------------------------------------------------------------------
 (*TESTE - Erro*)
 (*A derivao [66,26] 'COMANDO,INTEIRO' no foi encontrada na tabela de parsing.*)
 PROGRAM TESTE123;
@@ -124,7 +120,6 @@ BEGIN
 
 END.
 
-Exemplo 5: -----------------------------------------------------------------------------------------------
 (*TESTE - Válido. Uma expressão pode ser utilizada na procedure*)
 PROGRAM TESTEPROC2;
 LABEL label_a;
@@ -142,7 +137,6 @@ CALL p((10 +5) * X)
 END.
 
 
-Exemplo 6: -----------------------------------------------------------------------------------------------
 (*TESTE - Exemplo Válido com procedures*)
 PROGRAM TESTE123;
 	CONST
@@ -177,7 +171,6 @@ BEGIN
 	call p_teste(X);
 END.
 
-Exemplo 6: -----------------------------------------------------------------------------------------------
 (*TESTE - Exemplo inválido: A varivel 'A' foi declarada em duplicidade*)
 PROGRAM TESTE123;
 	CONST
@@ -189,7 +182,6 @@ BEGIN
 	Z := 0;
 END.
 
-Exemplo 7: -----------------------------------------------------------------------------------------------
 (*TESTE - Exemplo válido: multiplicação*)
 PROGRAM TESTE123;
 	CONST
@@ -201,7 +193,6 @@ BEGIN
 	Z := a * Y + 2;
 END.
 
-Exemplo 8: -----------------------------------------------------------------------------------------------
 (*TESTE - valido com duas procedures*)
 PROGRAM TESTE_PROC;
 	(*Proc A*)
@@ -226,7 +217,6 @@ BEGIN
 	call p_b(5);
 END.
 
-Exemplo 8: -----------------------------------------------------------------------------------------------
 (*TESTE - inválido: procedure duplicada*)
 PROGRAM TESTE_PROC;
 	(*Proc A*)
@@ -254,7 +244,6 @@ END.
 
 
 
-Exemplo 9: -----------------------------------------------------------------------------------------------
 (*TESTE 9 - Utilizando Arrays*)
 PROGRAM TESTE123;
 	VAR 

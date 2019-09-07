@@ -24,6 +24,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import br.com.compilador.image.MasterImage;
 import br.com.compilador.main.AnalisadorLexico;
 import br.com.compilador.main.Pilha;
+import br.com.compilador.main.PilhaErros;
 import br.com.compilador.util.ManipularArquivo;
 import br.com.compilador.util.Msg;
 import br.com.compilador.util.TextLineNumber;
@@ -41,8 +42,8 @@ public class PrincipalForm extends JFrame {
 	private JTabbedPane tabPaneConsole;
 	private JFileChooser fileChooser;
 	private File arquivoFileChooser;
-	private AnalisadorLexico analisadorLexico = new AnalisadorLexico();
-	private Stack<Pilha> simbolos = new Stack<Pilha>();
+	private AnalisadorLexico analisadorLexico;
+	private Stack<Pilha> simbolos;
 	private boolean ativo = false;
 	private JButton btnNovo;
 	private JButton btnAbrir;
@@ -64,8 +65,10 @@ public class PrincipalForm extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				textAreaPrincipal.setText("");
+				limparArea();
+				limparConsole();
 				tableAnalisadorLexico.limparTabela();
+				setTitle("Compilador LMS v1.0.0-betha");
 			}
 		});
 		
@@ -84,8 +87,10 @@ public class PrincipalForm extends JFrame {
 					try {
 						new ManipularArquivo();
 						StringBuilder texto = ManipularArquivo.lerArquivo(arquivoFileChooser.getAbsolutePath());
-						textAreaPrincipal.setText("");
+						limparArea();
+						limparConsole();
 						textAreaPrincipal.append(texto.toString());
+						setTitle("Compilador LMS v1.0.0-betha" + " - " + arquivoFileChooser.getAbsolutePath());
 					} catch (IOException e) {
 						new Msg().mensagemErro("Problema ao ler arquivo selecionado!");
 					}
@@ -137,12 +142,23 @@ public class PrincipalForm extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				tableAnalisadorLexico.limparTabela();
+				limparConsole();
+				if(analisadorLexico == null) {
+					 analisadorLexico = new AnalisadorLexico();
+				}
+				
 				try {
 					simbolos = analisadorLexico.analisar(textAreaPrincipal.getText());
 					for (Pilha p : simbolos) {
 						tableAnalisadorLexico.adicionarLinha(new Object[] { p.getCodigo(), p.getSimbolo(), p.getLinha() });
 					}
+					if(analisadorLexico.getErros() != null) {
+						for(PilhaErros p : analisadorLexico.getErros()) {
+							textAreaConsole.setText(p.getErro() + p.getLinha() + "\n");
+						}
+					}
 					tableAnalisadorLexico.selecionaPrimeiraLinha();
+					analisadorLexico = null;
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -289,6 +305,14 @@ public class PrincipalForm extends JFrame {
 		);
 		painelBotoes.setLayout(gl_panel);
 		painelPrincipal.setLayout(gl_painel);
+	}
+	
+	private void limparConsole() {
+		textAreaConsole.setText("");
+	}
+	
+	private void limparArea() {
+		textAreaPrincipal.setText("");
 	}
 
 	private Font getDefaultFont() {
