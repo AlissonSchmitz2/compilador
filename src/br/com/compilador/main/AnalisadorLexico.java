@@ -11,7 +11,7 @@ import br.com.compilador.hashmaps.Tokens;
 public class AnalisadorLexico {
 	private Tokens tokens = new Tokens();
 	private String linha, palavras = "";
-	private char c2 = ' ', c = ' ';
+	private char charProx = ' ', charIni = ' ';
 	private boolean comentario = false, literal = false, freio = false;
 	private int numLinha = 0, numComentario = 0, numLiteral = 0;
 	private Pilha p;
@@ -38,7 +38,7 @@ public class AnalisadorLexico {
 		pilhaErros.removeAllElements();
 		simbolos.removeAllElements();
 		numLinha = 0;
-		palavras ="";
+		palavras = "";
 
 		while ((linha = br.readLine()) != null) {
 
@@ -62,27 +62,27 @@ public class AnalisadorLexico {
 			// for que passa por cada elemento
 			for (int i = 0; i < linhaArray.length; i++) {
 
-				c = linhaArray[i];
+				charIni = linhaArray[i];
 				try {
-					c2 = linhaArray[i + 1];
+					charProx = linhaArray[i + 1];
 				} catch (Exception e1) {
 //					e1.printStackTrace();
 				}
-				
+
 				// tratamento de acento
-				if (!literal && !comentario && acento(c)) {
+				if (!literal && !comentario && acento(charIni)) {
 					pilhaErros.add(new PilhaErros("Erro de caractere inválido na linha ", numLinha));
 					freio = true;
 					break;
 				}
 
 				// Tratamento de Comentários com uma ou mais de uma linha
-				if (c == '(' && c2 == '*' && !comentario) {
+				if (charIni == '(' && charProx == '*' && !comentario) {
 					numComentario = numLinha;
 					comentario = true;
 					i++;
 				}
-				if (comentario && c == '*' && c2 == ')') {
+				if (comentario && charIni == '*' && charProx == ')') {
 					i += 2;
 					comentario = false;
 					continue;
@@ -101,7 +101,6 @@ public class AnalisadorLexico {
 
 				} else if (literal && linhaArray[i] == '\'') {
 					palavras += linhaArray[i];
-//					i++;
 					adicionarPilhaPrincipal(48);
 					literal = false;
 				}
@@ -111,12 +110,12 @@ public class AnalisadorLexico {
 					palavras += linhaArray[i];
 
 					try {
-						c2 = linhaArray[i + 1];
+						charProx = linhaArray[i + 1];
 					} catch (Exception e1) {
 //						e1.printStackTrace();
 					}
 
-					while (letra(c2) || digito(c2)) {
+					while (letra(charProx) || digito(charProx)) {
 						i++;
 						try {
 							palavras += linhaArray[i];
@@ -124,30 +123,31 @@ public class AnalisadorLexico {
 							// TODO: handle exception
 						}
 
-						c2 = ' ';
+						charProx = ' ';
 						if (i + 1 < linhaArray.length)
-							c2 = linhaArray[i + 1];
+							charProx = linhaArray[i + 1];
 					}
 
 					adicionarPilhaPrincipal(tokens.getCodToken(palavras.toUpperCase()));
 
-				} else if (!literal && (c == '-' || digito(linhaArray[i]))) {
+					// Tratamento de números
+				} else if (!literal && (charIni == '-' || digito(linhaArray[i]))) {
 					palavras += linhaArray[i];
 					try {
-					c2 = linhaArray[i + 1];
-					}catch (ArrayIndexOutOfBoundsException e) {
+						charProx = linhaArray[i + 1];
+					} catch (ArrayIndexOutOfBoundsException e) {
 						// TODO: handle exception
 					}
-					while (digito(c2)) {
+					while (digito(charProx)) {
 						i++;
 						try {
-						palavras += linhaArray[i];
-						}catch (ArrayIndexOutOfBoundsException e) {
+							palavras += linhaArray[i];
+						} catch (ArrayIndexOutOfBoundsException e) {
 							// TODO: handle exception
 						}
-						c2 = ' ';
+						charProx = ' ';
 						if (i + 1 < linhaArray.length)
-							c2 = linhaArray[i + 1];
+							charProx = linhaArray[i + 1];
 					}
 				} else if (!literal && (simbolos1Caracter(linhaArray[i]))) {
 					palavras += linhaArray[i];
@@ -157,9 +157,9 @@ public class AnalisadorLexico {
 							i++;
 						}
 					} catch (ArrayIndexOutOfBoundsException e) {
-						//e.printStackTrace();
+						// e.printStackTrace();
 					}
-					
+
 					adicionarPilhaPrincipal(tokens.getCodToken(palavras.toUpperCase()));
 				}
 			}
@@ -170,11 +170,11 @@ public class AnalisadorLexico {
 		if (comentario) {
 			pilhaErros.add(new PilhaErros("Erro de não fechamento de comentário na linha ", numComentario));
 		}
-		
+
 		br.close();
 		return simbolos;
 	}
-	
+
 	private void adicionarPilhaPrincipal(int token) {
 		p = new Pilha(token, numLinha, palavras);
 		simbolos.add(p);
