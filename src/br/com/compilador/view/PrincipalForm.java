@@ -156,6 +156,8 @@ public class PrincipalForm extends JFrame {
 						for(PilhaErros p : analisadorLexico.getErros()) {
 							textAreaConsole.setText(p.getErro() + p.getLinha() + "\n");
 						}
+					}else {
+						textAreaConsole.setText("Analisador Léxico Finalizado.");
 					}
 					tableAnalisadorLexico.selecionaPrimeiraLinha();
 					analisadorLexico = null;

@@ -42,6 +42,10 @@ public class AnalisadorLexico {
 
 		while ((linha = br.readLine()) != null) {
 
+			// inicio variaveis usadas
+			numLinha++;
+			char linhaArray[] = linha.toCharArray();
+
 			// erro literal com mais de uma linha
 			if (literal) {
 				literal = false;
@@ -54,10 +58,6 @@ public class AnalisadorLexico {
 				freio = false;
 				break;
 			}
-
-			// inicio variaveis usadas
-			numLinha++;
-			char linhaArray[] = linha.toCharArray();
 
 			// for que passa por cada elemento
 			for (int i = 0; i < linhaArray.length; i++) {
@@ -120,7 +120,6 @@ public class AnalisadorLexico {
 						try {
 							palavras += linhaArray[i];
 						} catch (Exception e) {
-							// TODO: handle exception
 						}
 
 						charProx = ' ';
@@ -146,8 +145,15 @@ public class AnalisadorLexico {
 							// TODO: handle exception
 						}
 						charProx = ' ';
-						if (i + 1 < linhaArray.length)
+						if (i + 1 < linhaArray.length) {
 							charProx = linhaArray[i + 1];
+						}
+						
+					}
+					if (Double.parseDouble(palavras) > -32768 && Double.parseDouble(palavras) < 32768) {
+						adicionarPilhaPrincipal(26);
+					} else {
+						pilhaErros.add(new PilhaErros("Erro de número fora de escala na linha: ", numLinha));
 					}
 				} else if (!literal && (simbolos1Caracter(linhaArray[i]))) {
 					palavras += linhaArray[i];
