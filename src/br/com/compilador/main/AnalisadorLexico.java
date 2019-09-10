@@ -91,8 +91,11 @@ public class AnalisadorLexico {
 					continue;
 				}
 
+				// NÃO FAZ NADA
+				if(charIni == ' '){
+				
 				// tratamento do literal 'meu nome é julia'
-				if (!literal && linhaArray[i] == '\'') {
+				} else if (!literal && linhaArray[i] == '\'') {
 					numLiteral = numLinha;
 					literal = true;
 					palavras += linhaArray[i];
@@ -128,7 +131,17 @@ public class AnalisadorLexico {
 					}
 
 					adicionarPilhaPrincipal(tokens.getCodToken(palavras.toUpperCase()));
-
+					
+					// tratamento de - teste
+				} else if (!literal && (charIni == '-' && linhaArray[i+1] == ' ')) {
+					palavras += linhaArray[i];
+					
+					
+					adicionarPilhaPrincipal(tokens.getCodToken(palavras.toUpperCase()));
+					palavras = "";
+				
+					
+					
 					// Tratamento de números
 				} else if (!literal && (charIni == '-' || digito(linhaArray[i]))) {
 					palavras += linhaArray[i];
@@ -154,7 +167,11 @@ public class AnalisadorLexico {
 						adicionarPilhaPrincipal(26);
 					} else {
 						pilhaErros.add(new PilhaErros("Erro de número fora de escala na linha: ", numLinha));
+						System.out.println("certo" + numLinha);
+						freio = true;
+						break;
 					}
+					palavras = "";
 				} else if (!literal && (simbolos1Caracter(linhaArray[i]))) {
 					palavras += linhaArray[i];
 					try {
