@@ -41,6 +41,12 @@ public class AnalisadorLexico {
 		palavras = "";
 
 		while ((linha = br.readLine()) != null) {
+			
+			// finalizar while quando sai do for
+			if (freio) {
+				freio = false;
+				break;
+			}
 
 			// inicio variaveis usadas
 			numLinha++;
@@ -53,11 +59,7 @@ public class AnalisadorLexico {
 				break;
 			}
 
-			// finalizar while quando sai do for
-			if (freio) {
-				freio = false;
-				break;
-			}
+
 
 			// for que passa por cada elemento
 			for (int i = 0; i < linhaArray.length; i++) {

@@ -36,7 +36,7 @@ public class PrincipalForm extends JFrame {
 	private JPanel painelPrincipal, painelBotoes;
 	private JTextArea textAreaPrincipal, textAreaConsole;
 	private JScrollPane scrollPaneTextCompilador, scrollTableAnalisadorLexico;
-	private TextLineNumber bordaCountLinhas;
+	public static TextLineNumber bordaCountLinhas;
 	private JButton btnSalvar, btnExecutar, btnDebug, btnSair;
 	private TableAnalisadorLexico tableAnalisadorLexico;
 	private JTabbedPane tabPaneConsole;
