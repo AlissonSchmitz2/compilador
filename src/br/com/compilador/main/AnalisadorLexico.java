@@ -45,11 +45,15 @@ public class AnalisadorLexico {
 			// finalizar while quando sai do for
 			if (freio) {
 				freio = false;
+				System.out.println("Parou");
 				break;
 			}
-
+			
 			// inicio variaveis usadas
 			numLinha++;
+			
+//			System.out.println(numLinha);
+			
 			char linhaArray[] = linha.toCharArray();
 
 			// erro literal com mais de uma linha
@@ -60,10 +64,9 @@ public class AnalisadorLexico {
 			}
 
 
-
 			// for que passa por cada elemento
 			for (int i = 0; i < linhaArray.length; i++) {
-
+				
 				charIni = linhaArray[i];
 				try {
 					charProx = linhaArray[i + 1];
@@ -93,11 +96,7 @@ public class AnalisadorLexico {
 					continue;
 				}
 
-				// NÃO FAZ NADA
-				if(charIni == ' '){
-				
-				// tratamento do literal 'meu nome é julia'
-				} else if (!literal && linhaArray[i] == '\'') {
+				if (!literal && linhaArray[i] == '\'') {
 					numLiteral = numLinha;
 					literal = true;
 					palavras += linhaArray[i];
@@ -142,8 +141,6 @@ public class AnalisadorLexico {
 					adicionarPilhaPrincipal(tokens.getCodToken(palavras.toUpperCase()));
 					palavras = "";
 				
-					
-					
 					// Tratamento de números
 				} else if (!literal && (charIni == '-' || digito(linhaArray[i]))) {
 					palavras += linhaArray[i];
@@ -163,16 +160,16 @@ public class AnalisadorLexico {
 						if (i + 1 < linhaArray.length) {
 							charProx = linhaArray[i + 1];
 						}
-						
 					}
+					
 					if (Double.parseDouble(palavras) > -32768 && Double.parseDouble(palavras) < 32768) {
 						adicionarPilhaPrincipal(26);
 					} else {
 						pilhaErros.add(new PilhaErros("Erro de número fora de escala na linha: ", numLinha));
-						System.out.println("certo" + numLinha);
 						freio = true;
 						break;
 					}
+
 					palavras = "";
 				} else if (!literal && (simbolos1Caracter(linhaArray[i]))) {
 					palavras += linhaArray[i];
@@ -181,10 +178,20 @@ public class AnalisadorLexico {
 							palavras += linhaArray[i + 1];
 							i++;
 						}
+						//Validação realizada aqui pois é encontrado o ponto nesse if
+						if(digito(linhaArray[i - 1])) {
+							if(verificaPontoFlutuante(linhaArray[i], linhaArray[i + 1])) {
+								pilhaErros.add(new PilhaErros("Erro de Ponto flutuante não aceito na liguagem na linha: ", numLinha));
+								freio = true;
+								break;
+							}
+						}
 					} catch (ArrayIndexOutOfBoundsException e) {
 						// e.printStackTrace();
 					}
-
+					
+					
+					
 					adicionarPilhaPrincipal(tokens.getCodToken(palavras.toUpperCase()));
 				}
 			}
@@ -220,6 +227,14 @@ public class AnalisadorLexico {
 		return false;
 	}
 
+	public static boolean verificaPontoFlutuante(char c, char cProx) {
+		if (c == '.' && digito(cProx)) {
+			return true;
+		}
+
+		return false;
+	}
+	
 	public static boolean simbolos2Caracter(char c, char cProx) {
 		if ((c == ':' && cProx == '=') || (c == '>' && cProx == '=') || (c == '<' && cProx == '=')
 				|| (c == '<' && cProx == '>') || (c == '.' && cProx == '.')) {
