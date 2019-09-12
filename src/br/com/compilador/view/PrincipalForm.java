@@ -2,6 +2,7 @@ package br.com.compilador.view;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -36,17 +37,18 @@ public class PrincipalForm extends JFrame {
 	private JPanel painelPrincipal, painelBotoes;
 	private JTextArea textAreaPrincipal, textAreaConsole;
 	private JScrollPane scrollPaneTextCompilador, scrollTableAnalisadorLexico;
-	public static TextLineNumber bordaCountLinhas;
-	private JButton btnSalvar, btnExecutar, btnDebug, btnSair;
+	private TextLineNumber bordaCountLinhas;
+	private JButton btnSalvar, btnExecutar, btnDebug, btnSair, btnParar;
 	private TableAnalisadorLexico tableAnalisadorLexico;
 	private JTabbedPane tabPaneConsole;
 	private JFileChooser fileChooser;
 	private File arquivoFileChooser;
 	private AnalisadorLexico analisadorLexico;
 	private Stack<Pilha> simbolos;
-	private boolean ativo = false;
+	private boolean debugAtivo = false;
 	private JButton btnNovo;
 	private JButton btnAbrir;
+	private JButton btnResumeProx;
 
 	public PrincipalForm() {
 		setTitle("Compilador LMS v1.0.0-betha");
@@ -170,16 +172,24 @@ public class PrincipalForm extends JFrame {
 		btnDebug.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (ativo) {
-					ativo = false;
+				if (debugAtivo) {
+					debugAtivo = false;
+					btnDebug.setIcon(MasterImage.debugOff);
+					btnDebug.setToolTipText("Debug OFF");
+					btnResumeProx.setEnabled(false);
+					btnParar.setEnabled(false);
 				} else {
-					ativo = true;
+					debugAtivo = true;
+					btnDebug.setIcon(MasterImage.debugOn);
+					btnDebug.setToolTipText("Debug ON");
+					btnResumeProx.setEnabled(true);
+					btnParar.setEnabled(true);
 				}
 				
-				tableAnalisadorLexico.setVisible(ativo);
-				scrollTableAnalisadorLexico.setVisible(ativo);
-				painelPrincipal.repaint();
-				painelPrincipal.revalidate();
+				tableAnalisadorLexico.setVisible(debugAtivo);
+				scrollTableAnalisadorLexico.setVisible(debugAtivo);
+				painelBotoes.repaint();
+				painelBotoes.revalidate();
 			}
 		});
 
@@ -201,22 +211,38 @@ public class PrincipalForm extends JFrame {
 
 		// Botões principais
 		
-		btnNovo = new JButton("Novo", MasterImage.novo);
+		btnNovo = new JButton(MasterImage.novo);
+		btnNovo.setToolTipText("Novo");
 		btnNovo.setFocusable(false);
 		
-		btnAbrir = new JButton("Abrir", MasterImage.abrir);
+		btnAbrir = new JButton(MasterImage.abrir);
+		btnAbrir.setToolTipText("Abrir");
 		btnAbrir.setFocusable(false);
 		
-		btnSalvar = new JButton("Salvar", MasterImage.salvar);
+		btnSalvar = new JButton(MasterImage.salvar);
+		btnSalvar.setToolTipText("Salvar");
 		btnSalvar.setFocusable(false);
 
-		btnExecutar = new JButton("Executar", MasterImage.executar);
+		btnExecutar = new JButton(MasterImage.executar);
+		btnExecutar.setToolTipText("Executar");
 		btnExecutar.setFocusable(false);
 
-		btnDebug = new JButton("Debug", MasterImage.debug);
+		btnDebug = new JButton(MasterImage.debugOff);
+		btnDebug.setToolTipText("Debug OFF");
 		btnDebug.setFocusable(false);
+		
+		btnResumeProx = new JButton(MasterImage.resumeProx);
+		btnResumeProx.setToolTipText("Resume/Próximo");
+		btnResumeProx.setFocusable(false);
+		btnResumeProx.setEnabled(false);
+		
+		btnParar = new JButton(MasterImage.parar);
+		btnParar.setToolTipText("Parar");
+		btnParar.setFocusable(false);
+		btnParar.setEnabled(false);
 
-		btnSair = new JButton("Sair", MasterImage.sair);
+		btnSair = new JButton(MasterImage.sair);
+		btnSair.setToolTipText("Sair");
 		btnSair.setFocusable(false);
 
 		// TextArea principal do compilador
@@ -249,11 +275,11 @@ public class PrincipalForm extends JFrame {
 
 		GroupLayout gl_painel = new GroupLayout(painelPrincipal);
 		gl_painel.setHorizontalGroup(
-			gl_painel.createParallelGroup(Alignment.TRAILING)
-				.addGroup(Alignment.LEADING, gl_painel.createSequentialGroup()
+			gl_painel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_painel.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_painel.createParallelGroup(Alignment.LEADING)
-						.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, 658, GroupLayout.PREFERRED_SIZE)
+						.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, 470, GroupLayout.PREFERRED_SIZE)
 						.addGroup(gl_painel.createSequentialGroup()
 							.addGroup(gl_painel.createParallelGroup(Alignment.TRAILING)
 								.addComponent(scrollPaneTextCompilador, GroupLayout.DEFAULT_SIZE, 802, Short.MAX_VALUE)
@@ -275,37 +301,15 @@ public class PrincipalForm extends JFrame {
 					.addComponent(tabPaneConsole, GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
 					.addContainerGap())
 		);
-		
-		GroupLayout gl_panel = new GroupLayout(painelBotoes);
-		gl_panel.setHorizontalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addComponent(btnNovo, GroupLayout.PREFERRED_SIZE, 83, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnAbrir, GroupLayout.PREFERRED_SIZE, 83, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnSalvar)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnExecutar)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnDebug, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnSair, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(70, Short.MAX_VALUE))
-		);
-		gl_panel.setVerticalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
-						.addComponent(btnNovo, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-						.addComponent(btnAbrir, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-						.addComponent(btnExecutar, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-						.addComponent(btnDebug, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-						.addComponent(btnSair, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-						.addComponent(btnSalvar, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-		);
-		painelBotoes.setLayout(gl_panel);
+		painelBotoes.setLayout(new GridLayout(0, 8, 0, 0));
+		painelBotoes.add(btnNovo);
+		painelBotoes.add(btnAbrir);
+		painelBotoes.add(btnSalvar);
+		painelBotoes.add(btnExecutar);
+		painelBotoes.add(btnDebug);
+		painelBotoes.add(btnResumeProx);
+		painelBotoes.add(btnParar);
+		painelBotoes.add(btnSair);
 		painelPrincipal.setLayout(gl_painel);
 	}
 	

@@ -47,7 +47,9 @@ public class ManipularArquivo {
 			int caracterLido = arq.read();
 
 			while (caracterLido != -1) {
-				result.append((char) caracterLido);
+				if (caracterLido != 13) { //Código do caracter desconhecido na quebra de linha
+					result.append((char) caracterLido);
+				}
 				caracterLido = arq.read();
 			}
 		} finally {
