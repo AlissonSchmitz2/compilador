@@ -20,9 +20,7 @@ public class TablePadrao extends JTable {
         this.setRowHeight(18);
     }
     
-    /**
-     * Remove todas as linhas da tabela.
-     */
+	//Remove todas as linhas da tabela.
     public void limparTabela() {
         DefaultTableModel model = (DefaultTableModel) this.getModel();
         model.setNumRows(0);
@@ -175,9 +173,5 @@ public class TablePadrao extends JTable {
     public int[] getLinhasSelecionadas() {
         return getSelectedRows();
     }
-    
-//    public void addBotao(JButton botao, int indiceColuna) {
-//        new TablePadraoButtonColumn(this, indiceColuna, botao);
-//    }
 }
 

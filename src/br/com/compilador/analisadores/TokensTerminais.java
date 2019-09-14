@@ -1,12 +1,12 @@
-package br.com.compilador.simbolos;
+package br.com.compilador.analisadores;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Tokens {
+public class TokensTerminais {
 	public static HashMap<String, Integer> mapTokens = new HashMap<String, Integer>();
 
-	public Tokens() {
+	public TokensTerminais() {
 		criarTokens();
 	}
 

@@ -1,4 +1,4 @@
-package br.com.compilador.main;
+package br.com.compilador.model;
 
 public class Pilha {
 	private int codigo, linha;

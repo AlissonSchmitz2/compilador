@@ -6,12 +6,11 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Stack;
 
-import br.com.compilador.main.Pilha;
-import br.com.compilador.main.PilhaErros;
-import br.com.compilador.simbolos.Tokens;
+import br.com.compilador.model.Pilha;
+import br.com.compilador.model.PilhaErros;
 
 public class AnalisadorLexico {
-	private Tokens tokens = new Tokens();
+	private TokensTerminais tokens = new TokensTerminais();
 	private String linha, palavras = "";
 	private char charProx = ' ', charIni = ' ';
 	private boolean comentario = false, literal = false, freio = false;

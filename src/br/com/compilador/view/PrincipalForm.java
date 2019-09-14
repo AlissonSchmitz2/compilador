@@ -24,8 +24,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import br.com.compilador.analisadores.AnalisadorLexico;
 import br.com.compilador.image.MasterImage;
-import br.com.compilador.main.Pilha;
-import br.com.compilador.main.PilhaErros;
+import br.com.compilador.model.Pilha;
+import br.com.compilador.model.PilhaErros;
 import br.com.compilador.util.ManipularArquivo;
 import br.com.compilador.util.Msg;
 import br.com.compilador.util.TextLineNumber;
@@ -35,22 +35,32 @@ import br.com.compilador.view.table.TableAnalisadorSintatico;
 public class PrincipalForm extends JFrame {
 	private static final long serialVersionUID = -4121820897834715812L;
 
+	//Componentes
 	private JPanel painelPrincipal, painelBotoes;
-	private JTextArea textAreaPrincipal, textAreaConsole;
-	private JScrollPane scrollPaneTextCompilador, scrollTableAnalisadorLexico, scrollTableAnalisadorSintatico;
-	private TextLineNumber bordaCountLinhas;
-	private JButton btnSalvar, btnExecutar, btnDebug, btnSair, btnParar;
-	private TableAnalisadorLexico tableAnalisadorLexico;
-	private TableAnalisadorSintatico tableAnalisadorSintatico;
-	private JTabbedPane tabPaneConsole;
+	private JButton btnNovo, btnAbrir, btnSalvar, btnExecutar, btnDebug, btnResumeProx, btnParar, btnSair;
+	
+	//Componentes btnAbrir
 	private JFileChooser fileChooser;
 	private File arquivoFileChooser;
+	
+	//TextArea Compilador
+	private JTextArea textAreaPrincipal;
+	private JScrollPane scrollPaneTextCompilador;
+	private TextLineNumber bordaCountLinhas; //Borda de Números
+	
+	//Tabelas
+	private TableAnalisadorSintatico tableAnalisadorSintatico;
+	private TableAnalisadorLexico tableAnalisadorLexico;
+	private JScrollPane scrollTableAnalisadorLexico, scrollTableAnalisadorSintatico;
+	
+	//TextArea Console
+	private JTabbedPane tabPaneConsole;
+	private JTextArea textAreaConsole;
+
+	//Auxiliares
 	private AnalisadorLexico analisadorLexico;
 	private Stack<Pilha> simbolos;
 	private boolean debugAtivo = false;
-	private JButton btnNovo;
-	private JButton btnAbrir;
-	private JButton btnResumeProx;
 
 	public PrincipalForm() {
 		setTitle("Compilador LMS v1.0.0-betha");
@@ -71,7 +81,6 @@ public class PrincipalForm extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				limparArea();
 				limparConsole();
-				tableAnalisadorLexico.limparTabela();
 				setTitle("Compilador LMS v1.0.0-betha");
 			}
 		});
@@ -98,11 +107,9 @@ public class PrincipalForm extends JFrame {
 					} catch (IOException e) {
 						new Msg().mensagemErro("Problema ao ler arquivo selecionado!");
 					}
-
 				} else {
 					new Msg().mensagemAviso("Seleção do arquivo cancelada!");
 				}
-				
 			}
 		});
 		
@@ -145,7 +152,6 @@ public class PrincipalForm extends JFrame {
 		btnExecutar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				tableAnalisadorLexico.limparTabela();
 				limparConsole();
 				if(analisadorLexico == null) {
 					 analisadorLexico = new AnalisadorLexico();
@@ -196,7 +202,17 @@ public class PrincipalForm extends JFrame {
 				painelBotoes.revalidate();
 			}
 		});
-
+		
+		btnParar.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				limparConsole();
+				textAreaConsole.setText("Execução parada.");
+				textAreaConsole.setForeground(Color.red);
+			}
+		});
+		
 		btnSair.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -214,7 +230,6 @@ public class PrincipalForm extends JFrame {
 		painelBotoes = new JPanel();
 
 		// Botões principais
-		
 		btnNovo = new JButton(MasterImage.novo);
 		btnNovo.setToolTipText("Novo");
 		btnNovo.setFocusable(false);
@@ -269,7 +284,6 @@ public class PrincipalForm extends JFrame {
 		tableAnalisadorSintatico = new TableAnalisadorSintatico();
 		painelPrincipal.add(tableAnalisadorSintatico);
 		tableAnalisadorSintatico.setVisible(false);
-		
 		scrollTableAnalisadorSintatico = new JScrollPane(tableAnalisadorSintatico);
 		scrollTableAnalisadorSintatico.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollTableAnalisadorSintatico.setVisible(false);
@@ -278,7 +292,6 @@ public class PrincipalForm extends JFrame {
 		tabPaneConsole = new JTabbedPane(JTabbedPane.TOP);
 		tabPaneConsole.setAutoscrolls(true);
 		tabPaneConsole.setBackground(Color.WHITE);
-
 		textAreaConsole = new JTextArea();
 		textAreaConsole.setBackground(new Color(221, 221, 221));
 		textAreaConsole.setFont(getDefaultFont());
@@ -334,6 +347,7 @@ public class PrincipalForm extends JFrame {
 	
 	private void limparConsole() {
 		textAreaConsole.setText("");
+		tableAnalisadorLexico.limparTabela();
 	}
 	
 	private void limparArea() {

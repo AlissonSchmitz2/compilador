@@ -1,4 +1,4 @@
-package br.com.compilador.main;
+package br.com.compilador.model;
 
 public class PilhaErros {
 	private String erro;
