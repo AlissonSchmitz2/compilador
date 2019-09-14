@@ -1,4 +1,4 @@
-package br.com.compilador.hashmaps;
+package br.com.compilador.simbolos;
 
 import java.util.HashMap;
 import java.util.Map;

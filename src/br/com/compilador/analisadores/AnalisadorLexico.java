@@ -1,4 +1,4 @@
-package br.com.compilador.main;
+package br.com.compilador.analisadores;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,7 +6,9 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Stack;
 
-import br.com.compilador.hashmaps.Tokens;
+import br.com.compilador.main.Pilha;
+import br.com.compilador.main.PilhaErros;
+import br.com.compilador.simbolos.Tokens;
 
 public class AnalisadorLexico {
 	private Tokens tokens = new Tokens();

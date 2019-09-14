@@ -22,24 +22,26 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import br.com.compilador.analisadores.AnalisadorLexico;
 import br.com.compilador.image.MasterImage;
-import br.com.compilador.main.AnalisadorLexico;
 import br.com.compilador.main.Pilha;
 import br.com.compilador.main.PilhaErros;
 import br.com.compilador.util.ManipularArquivo;
 import br.com.compilador.util.Msg;
 import br.com.compilador.util.TextLineNumber;
 import br.com.compilador.view.table.TableAnalisadorLexico;
+import br.com.compilador.view.table.TableAnalisadorSintatico;
 
 public class PrincipalForm extends JFrame {
 	private static final long serialVersionUID = -4121820897834715812L;
 
 	private JPanel painelPrincipal, painelBotoes;
 	private JTextArea textAreaPrincipal, textAreaConsole;
-	private JScrollPane scrollPaneTextCompilador, scrollTableAnalisadorLexico;
+	private JScrollPane scrollPaneTextCompilador, scrollTableAnalisadorLexico, scrollTableAnalisadorSintatico;
 	private TextLineNumber bordaCountLinhas;
 	private JButton btnSalvar, btnExecutar, btnDebug, btnSair, btnParar;
 	private TableAnalisadorLexico tableAnalisadorLexico;
+	private TableAnalisadorSintatico tableAnalisadorSintatico;
 	private JTabbedPane tabPaneConsole;
 	private JFileChooser fileChooser;
 	private File arquivoFileChooser;
@@ -188,6 +190,8 @@ public class PrincipalForm extends JFrame {
 				
 				tableAnalisadorLexico.setVisible(debugAtivo);
 				scrollTableAnalisadorLexico.setVisible(debugAtivo);
+				tableAnalisadorSintatico.setVisible(debugAtivo);
+				scrollTableAnalisadorSintatico.setVisible(debugAtivo);
 				painelBotoes.repaint();
 				painelBotoes.revalidate();
 			}
@@ -260,6 +264,15 @@ public class PrincipalForm extends JFrame {
 		scrollTableAnalisadorLexico = new JScrollPane(tableAnalisadorLexico);
 		scrollTableAnalisadorLexico.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollTableAnalisadorLexico.setVisible(false);
+		
+		// Tabela do Analisador Sintatico
+		tableAnalisadorSintatico = new TableAnalisadorSintatico();
+		painelPrincipal.add(tableAnalisadorSintatico);
+		tableAnalisadorSintatico.setVisible(false);
+		
+		scrollTableAnalisadorSintatico = new JScrollPane(tableAnalisadorSintatico);
+		scrollTableAnalisadorSintatico.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollTableAnalisadorSintatico.setVisible(false);
 
 		// Aba Console e TextArea
 		tabPaneConsole = new JTabbedPane(JTabbedPane.TOP);
@@ -279,13 +292,15 @@ public class PrincipalForm extends JFrame {
 				.addGroup(gl_painel.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_painel.createParallelGroup(Alignment.LEADING)
-						.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, 470, GroupLayout.PREFERRED_SIZE)
 						.addGroup(gl_painel.createSequentialGroup()
 							.addGroup(gl_painel.createParallelGroup(Alignment.TRAILING)
 								.addComponent(scrollPaneTextCompilador, GroupLayout.DEFAULT_SIZE, 802, Short.MAX_VALUE)
 								.addComponent(tabPaneConsole, GroupLayout.DEFAULT_SIZE, 802, Short.MAX_VALUE))
 							.addGap(18)
-							.addComponent(scrollTableAnalisadorLexico, GroupLayout.PREFERRED_SIZE, 235, GroupLayout.PREFERRED_SIZE)))
+							.addGroup(gl_painel.createParallelGroup(Alignment.LEADING)
+								.addComponent(scrollTableAnalisadorSintatico, GroupLayout.PREFERRED_SIZE, 234, GroupLayout.PREFERRED_SIZE)
+								.addComponent(scrollTableAnalisadorLexico, GroupLayout.PREFERRED_SIZE, 235, GroupLayout.PREFERRED_SIZE)))
+						.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, 470, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap())
 		);
 		gl_painel.setVerticalGroup(
@@ -294,11 +309,15 @@ public class PrincipalForm extends JFrame {
 					.addContainerGap()
 					.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_painel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(scrollTableAnalisadorLexico, GroupLayout.PREFERRED_SIZE, 354, GroupLayout.PREFERRED_SIZE)
-						.addComponent(scrollPaneTextCompilador, GroupLayout.PREFERRED_SIZE, 354, GroupLayout.PREFERRED_SIZE))
-					.addGap(18)
-					.addComponent(tabPaneConsole, GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
+					.addGroup(gl_painel.createParallelGroup(Alignment.TRAILING)
+						.addGroup(gl_painel.createSequentialGroup()
+							.addComponent(scrollPaneTextCompilador, GroupLayout.PREFERRED_SIZE, 502, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(tabPaneConsole, GroupLayout.PREFERRED_SIZE, 129, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_painel.createSequentialGroup()
+							.addComponent(scrollTableAnalisadorSintatico, GroupLayout.DEFAULT_SIZE, 303, Short.MAX_VALUE)
+							.addGap(18)
+							.addComponent(scrollTableAnalisadorLexico, GroupLayout.PREFERRED_SIZE, 316, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap())
 		);
 		painelBotoes.setLayout(new GridLayout(0, 8, 0, 0));
