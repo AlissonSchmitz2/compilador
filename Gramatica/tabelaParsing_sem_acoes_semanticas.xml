@@ -166,6 +166,7 @@
 	<item codigo="80,31" derivacao="-|TERMO|REPEXP" />
 	<item codigo="80,35" derivacao="NULL" />
 	<item codigo="80,37" derivacao="NULL" />
+	
 	<item codigo="80,40" derivacao="NULL" />
 	<item codigo="80,41" derivacao="NULL" />
 	<item codigo="80,42" derivacao="NULL" />
@@ -174,6 +175,8 @@
 	<item codigo="80,45" derivacao="NULL" />
 	<item codigo="80,46" derivacao="NULL" />
 	<item codigo="80,47" derivacao="NULL" />
+	
+	
 	<item codigo="81,24" derivacao="FATOR|REPTERMO" />
 	<item codigo="81,25" derivacao="FATOR|REPTERMO" />
 	<item codigo="81,26" derivacao="FATOR|REPTERMO" />
