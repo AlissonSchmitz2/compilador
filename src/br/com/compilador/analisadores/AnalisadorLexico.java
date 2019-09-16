@@ -127,13 +127,13 @@ public class AnalisadorLexico {
 							charProx = linhaArray[i + 1];
 					}
 
-					adicionarPilhaPrincipal(tokens.getCodToken(palavras.toUpperCase()));
+					adicionarPilhaPrincipal(tokens.getCodToken(palavras.toUpperCase()) == 0 ? 25 : tokens.getCodToken(palavras.toUpperCase()));
 
 					// tratamento de - teste
 				} else if (!literal && (charIni == '-' && linhaArray[i + 1] == ' ')) {
 					palavras += linhaArray[i];
 
-					adicionarPilhaPrincipal(tokens.getCodToken(palavras.toUpperCase()));
+					adicionarPilhaPrincipal(tokens.getCodToken(palavras.toUpperCase()) == 0 ? 25 : tokens.getCodToken(palavras.toUpperCase()));
 					palavras = "";
 
 					// Tratamento de números
@@ -186,7 +186,7 @@ public class AnalisadorLexico {
 						// e.printStackTrace();
 					}
 
-					adicionarPilhaPrincipal(tokens.getCodToken(palavras.toUpperCase()));
+					adicionarPilhaPrincipal(tokens.getCodToken(palavras.toUpperCase()) == 0 ? 25 : tokens.getCodToken(palavras.toUpperCase()));
 				}
 			}
 		}

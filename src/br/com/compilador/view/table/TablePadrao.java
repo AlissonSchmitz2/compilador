@@ -10,6 +10,8 @@ import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
+import br.com.compilador.util.Msg;
+
 public class TablePadrao extends JTable {
 	private static final long serialVersionUID = -1460232083708245880L;
 
@@ -156,7 +158,7 @@ public class TablePadrao extends JTable {
                 setRowSelectionInterval(getRowCount() - 1, getRowCount() - 1);
             }
         } else {
-//            new Msg(this).msgAtencao("Nenhuma linha selecionada.");
+            new Msg().mensagemAviso("Nenhuma linha selecionada.");
         }
     }
     
@@ -173,5 +175,13 @@ public class TablePadrao extends JTable {
     public int[] getLinhasSelecionadas() {
         return getSelectedRows();
     }
+    
+	public int getValorLinhaSelecionada(int coluna) {	
+		if(getSelectedRow() != -1) {
+			return (int)getValueAt(getLinhaSelecionada(), coluna);
+		}
+		
+		return 0;
+	}
 }
 

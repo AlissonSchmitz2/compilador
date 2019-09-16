@@ -11,6 +11,7 @@ public class TokensTerminais {
 	}
 
 	public void criarTokens() {
+		//Terminais
 		mapTokens.put("PROGRAM", 1);
 		mapTokens.put("LABEL", 2);
 		mapTokens.put("CONST", 3);
@@ -35,8 +36,8 @@ public class TokensTerminais {
 		mapTokens.put("OR", 22);
 		mapTokens.put("AND", 23);
 		mapTokens.put("NOT", 24);
-//		mapTokens.put("IDENTIFICADOR", 25);
-//		mapTokens.put("INTEIRO", 26);
+		mapTokens.put("IDENTIFICADOR", 25);
+		mapTokens.put("INTEIRO", 26);
 		mapTokens.put("FOR", 27);
 		mapTokens.put("TO", 28);
 		mapTokens.put("CASE", 29);
@@ -58,7 +59,7 @@ public class TokensTerminais {
 		mapTokens.put("<>", 45);
 		mapTokens.put(",", 46);
 		mapTokens.put(";", 47);
-//		mapTokens.put("LITERAL", 48);
+		mapTokens.put("LITERAL", 48);
 		mapTokens.put(".", 49);
 		mapTokens.put("..", 50);
 		mapTokens.put("$", 51);
@@ -69,7 +70,7 @@ public class TokensTerminais {
 			return mapTokens.get(simbolo.toUpperCase());
 		}
 
-		return 25;
+		return 0;
 	}
 
 	public String getSimbolo(int cod) {

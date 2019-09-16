@@ -116,14 +116,17 @@
 	<item codigo="75,31" derivacao="EXPRESSAO" />
 	<item codigo="75,36" derivacao="EXPRESSAO" />
 	<item codigo="75,48" derivacao="LITERAL" />
+	
 	<item codigo="76,37" derivacao="NULL" />
 	<item codigo="76,46" derivacao=",|ITEMSAIDA|REPITEM" />
+	
 	<item codigo="77,24" derivacao="EXPSIMP|REPEXPSIMP" />
 	<item codigo="77,25" derivacao="EXPSIMP|REPEXPSIMP" />
 	<item codigo="77,26" derivacao="EXPSIMP|REPEXPSIMP" />
 	<item codigo="77,30" derivacao="EXPSIMP|REPEXPSIMP" />
 	<item codigo="77,31" derivacao="EXPSIMP|REPEXPSIMP" />
 	<item codigo="77,36" derivacao="EXPSIMP|REPEXPSIMP" />
+	
 	<item codigo="78,7" derivacao="NULL" />
 	<item codigo="78,10" derivacao="NULL" />
 	<item codigo="78,14" derivacao="NULL" />
@@ -136,17 +139,21 @@
 	<item codigo="78,40" derivacao="=|EXPSIMP" />
 	<item codigo="78,41" derivacao=">|EXPSIMP" />
 	<item codigo="78,42" derivacao=">=|EXPSIMP" />
-	<item codigo="78,43" derivacao="&lt;|EXPSIMP" /><!-- Sinal de menor -->
-	<item codigo="78,44" derivacao="&lt;=|EXPSIMP" /><!-- Sinal de menor ou igual -->
-	<item codigo="78,45" derivacao="&lt;&gt;|EXPSIMP" /><!-- Sinal de diferente -->
+	<item codigo="78,43" derivacao="<|EXPSIMP" /><!-- Sinal de menor -->
+	<item codigo="78,44" derivacao="<=|EXPSIMP" /><!-- Sinal de menor ou igual -->
+	<item codigo="78,45" derivacao="<>|EXPSIMP" /><!-- Sinal de diferente -->
 	<item codigo="78,46" derivacao="NULL" />
 	<item codigo="78,47" derivacao="NULL" />
+	
+	
 	<item codigo="79,24" derivacao="TERMO|REPEXP" />
 	<item codigo="79,25" derivacao="TERMO|REPEXP" />
 	<item codigo="79,26" derivacao="TERMO|REPEXP" />
 	<item codigo="79,30" derivacao="+|TERMO|REPEXP" />
 	<item codigo="79,31" derivacao="-|TERMO|REPEXP" />
 	<item codigo="79,36" derivacao="TERMO|REPEXP" />
+	
+	
 	<item codigo="80,7" derivacao="NULL" />
 	<item codigo="80,10" derivacao="NULL" />
 	<item codigo="80,14" derivacao="NULL" />

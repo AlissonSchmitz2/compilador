@@ -54,7 +54,7 @@ public class TokensNaoTerminais {
 			return mapTokens.get(simbolo.toUpperCase());
 		}
 
-		return 25;
+		return 0;
 	}
 
 	public String getSimbolo(int cod) {
