@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Stack;
 
 import javax.swing.GroupLayout;
@@ -24,7 +23,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import br.com.compilador.analisadores.AnalisadorLexico;
-import br.com.compilador.analisadores.TabelaParsing;
+import br.com.compilador.analisadores.TabelaParsingMatriz;
 import br.com.compilador.analisadores.TokensNaoTerminais;
 import br.com.compilador.analisadores.TokensTerminais;
 import br.com.compilador.image.MasterImage;
@@ -63,15 +62,14 @@ public class PrincipalForm extends JFrame {
 
 	// Analisadores
 	private AnalisadorLexico analisadorLexico;
-	private TabelaParsing tabelaParsing;
+	private Stack<Pilha> simbolosLexicos;
 
 	// Auxiliares
-	private Stack<Pilha> simbolos;
+	private String[] matrizProd;
+	private int codAux;
 	private TokensNaoTerminais tokensNaoTerminais = new TokensNaoTerminais();
 	private TokensTerminais tokensTerminais = new TokensTerminais();
 	private boolean debugAtivo = false;
-	private int codAux;
-	private ArrayList<String> listDerivacao;
 
 	public PrincipalForm() {
 		setTitle("Compilador LMS v1.0.0-betha");
@@ -188,7 +186,8 @@ public class PrincipalForm extends JFrame {
 
 				limparConsole();
 				analisarLexico();
-				analisarSintatico();
+				tableAnalisadorSintatico.limparTabela();
+				tableAnalisadorSintatico.adicionarLinha(new Object[] { 52, "PROGRAMA" });
 
 				tableAnalisadorLexico.setVisible(debugAtivo);
 				scrollTableAnalisadorLexico.setVisible(debugAtivo);
@@ -351,8 +350,8 @@ public class PrincipalForm extends JFrame {
 		}
 
 		try {
-			simbolos = analisadorLexico.analisar(textAreaPrincipal.getText());
-			for (Pilha p : simbolos) {
+			simbolosLexicos = analisadorLexico.analisar(textAreaPrincipal.getText());
+			for (Pilha p : simbolosLexicos) {
 				tableAnalisadorLexico.adicionarLinha(new Object[] { p.getCodigo(), p.getSimbolo(), p.getLinha() });
 			}
 			if (analisadorLexico.getErros() != null) {
@@ -360,7 +359,7 @@ public class PrincipalForm extends JFrame {
 					textAreaConsole.setText(p.getErro() + p.getLinha() + "\n");
 				}
 			} else {
-				textAreaConsole.append("Analisador Léxico Finalizado.");
+				textAreaConsole.append("Analisador Léxico Finalizado.\n");
 			}
 			tableAnalisadorLexico.selecionaPrimeiraLinha();
 			analisadorLexico = null;
@@ -370,54 +369,65 @@ public class PrincipalForm extends JFrame {
 	}
 
 	private void analisarSintatico() {
-		tableAnalisadorSintatico.limparTabela();
-		tableAnalisadorSintatico.adicionarLinha(new Object[] { 52, "PROGRAMA" });
+		while(tableAnalisadorSintatico.getRowCount() != 0) {
+			analisarSintaticoDebug();
+		}
 	}
 
 	private void analisarSintaticoDebug() {
-		if (tabelaParsing == null) {
-			tabelaParsing = new TabelaParsing();
-		}
-		
-		if(tokensTerminais.getSimbolo(tableAnalisadorSintatico.getValorLinhaSelecionada(0)) != null) {
-			if(tableAnalisadorSintatico.getValorLinhaSelecionada(0) == tableAnalisadorLexico.getValorLinhaSelecionada(0)) {
+		//TODO: Tratar erros de validação sintatica
+		if (tokensTerminais.getSimbolo(tableAnalisadorSintatico.getValorLinhaSelecionada(0)) != null) {
+			if (tableAnalisadorSintatico.getValorLinhaSelecionada(0) == tableAnalisadorLexico
+					.getValorLinhaSelecionada(0)) {
 				excluirLinhasIniciaisTabelas();
-			}else {
-				textAreaConsole.append("Erro");
+			} else {
+				textAreaConsole.append("Erro na linha " + tableAnalisadorLexico.getValorLinhaSelecionada(2));
 			}
-		}else if(tokensNaoTerminais.getSimbolo(tableAnalisadorSintatico.getValorLinhaSelecionada(0)) != null) {
-			compararTabelas();
-			if (listDerivacao != null) {
-				tableAnalisadorSintatico.selecionaUltimaLinha();
-				for (String aux : listDerivacao) {
-//				for (int i = listDerivacao.size() - 1; i>-1; i--) {
-					if (tokensNaoTerminais.getCodToken(aux) == 0) {
-						codAux = tokensTerminais.getCodToken(aux);
-					}else {
-						codAux = tokensNaoTerminais.getCodToken(aux);
-					}
-					tableAnalisadorSintatico.adicionarLinha(new Object[] { codAux == 0 ? 25 : codAux, aux });
+		} else if (tokensNaoTerminais
+				.getSimbolo(tableAnalisadorSintatico.getValorLinhaSelecionada(0)) != null) {
+			matrizProd = getDerivacoes(tableAnalisadorSintatico.getValorLinhaSelecionada(0),
+					tableAnalisadorLexico.getValorLinhaSelecionada(0));
+			if (matrizProd != null) {
+				if (matrizProd[0] == "NULL") {
+					tableAnalisadorSintatico.excluirLinhasSelecionadas();
+					tableAnalisadorSintatico.selecionaPrimeiraLinha();
+				} else {
+					tableAnalisadorSintatico.excluirLinhasSelecionadas();
+					tableAnalisadorSintatico.selecionaPrimeiraLinha();
 					
-					if(aux.equals("PROGRAM")) {
-						tableAnalisadorSintatico.selecionaPrimeiraLinha();
-						tableAnalisadorSintatico.excluirLinhasSelecionadas();
-						tableAnalisadorSintatico.selecionaPrimeiraLinha();
+					for (int i = matrizProd.length - 1; i > -1; i--) {
+						if (tokensNaoTerminais.getCodToken(matrizProd[i]) == 0) {
+							codAux = tokensTerminais.getCodToken(matrizProd[i]);
+						} else {
+							codAux = tokensNaoTerminais.getCodToken(matrizProd[i]);
+						}
+
+						tableAnalisadorSintatico
+								.inserirLinha(new Object[] { codAux == 0 ? 25 : codAux, matrizProd[i] });
 					}
 				}
+				tableAnalisadorSintatico.selecionaPrimeiraLinha();
+			} else {
+				textAreaConsole.append("Erro na linha " + tableAnalisadorLexico.getValorLinhaSelecionada(2));
 			}
-			excluirLinhasIniciaisTabelas();
 		}
-		
-		tabelaParsing = null;
-		listDerivacao = null;
+
+		matrizProd = null;
 	}
 
-	private void compararTabelas() {
-		listDerivacao = new ArrayList<String>();
-		listDerivacao = tabelaParsing.analisarValor(tableAnalisadorSintatico.getValorLinhaSelecionada(0),
-				tableAnalisadorLexico.getValorLinhaSelecionada(0));
+	public String[] getDerivacoes(int naoTerminal, int terminal) {
+		String[] derivacao = null;
+		for (TabelaParsingMatriz matrizAnalise : TabelaParsingMatriz.values()) {
+			derivacao = matrizAnalise.getDerivacao(naoTerminal, terminal);
+
+			if (derivacao != null) {
+				break;
+			}
+		}
+
+		return derivacao;
 	}
-	
+
 	private void excluirLinhasIniciaisTabelas() {
 		tableAnalisadorLexico.selecionaPrimeiraLinha();
 		tableAnalisadorSintatico.selecionaPrimeiraLinha();

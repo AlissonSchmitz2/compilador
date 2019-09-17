@@ -32,7 +32,7 @@ public class TokensNaoTerminais {
 		mapTokens.put("REPPAR", 70);
 		mapTokens.put("ELSEPARTE", 71);
 		mapTokens.put("VARIAVEL", 72);
-		mapTokens.put("VARIAVEL", 73);
+		mapTokens.put("VARIAVEL1", 73);
 		mapTokens.put("REPVARIAVEL", 74);
 		mapTokens.put("ITEMSAIDA", 75);
 		mapTokens.put("REPITEM", 76);

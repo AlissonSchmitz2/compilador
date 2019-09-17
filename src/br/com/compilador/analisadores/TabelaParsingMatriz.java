@@ -64,7 +64,7 @@ public enum TabelaParsingMatriz {
 	MATRIZ_66_15(66,15, TabelaParsingDerivacoes.DERIVACOES_63.getDerivacoes()),
 	MATRIZ_66_16(66,16, TabelaParsingDerivacoes.DERIVACOES_20.getDerivacoes()),
 	MATRIZ_66_18(66,18, TabelaParsingDerivacoes.DERIVACOES_21.getDerivacoes()),
-	MATRIZ_66_19(66,19, TabelaParsingDerivacoes.DERIVACOES_66.getDerivacoes()),
+	MATRIZ_66_19(66,19, TabelaParsingDerivacoes.DERIVACOES_63.getDerivacoes()),
 	MATRIZ_66_20(66,20, TabelaParsingDerivacoes.DERIVACOES_22.getDerivacoes()),
 	MATRIZ_66_21(66,21, TabelaParsingDerivacoes.DERIVACOES_23.getDerivacoes()),
 	MATRIZ_66_25(66,25, TabelaParsingDerivacoes.DERIVACOES_24.getDerivacoes()),
