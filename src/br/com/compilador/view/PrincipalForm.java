@@ -69,7 +69,7 @@ public class PrincipalForm extends JFrame {
 	private int codAux;
 	private TokensNaoTerminais tokensNaoTerminais = new TokensNaoTerminais();
 	private TokensTerminais tokensTerminais = new TokensTerminais();
-	private boolean debugAtivo = false;
+	private boolean debugAtivo = false, erroLexico = false;
 
 	public PrincipalForm() {
 		setTitle("Compilador LMS v1.0.0-betha");
@@ -90,6 +90,7 @@ public class PrincipalForm extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				limparArea();
 				limparConsole();
+				limparTabelas();
 				setTitle("Compilador LMS v1.0.0-betha");
 			}
 		});
@@ -111,6 +112,7 @@ public class PrincipalForm extends JFrame {
 						StringBuilder texto = ManipularArquivo.lerArquivo(arquivoFileChooser.getAbsolutePath());
 						limparArea();
 						limparConsole();
+						limparTabelas();
 						textAreaPrincipal.append(texto.toString());
 						setTitle("Compilador LMS v1.0.0-betha" + " - " + arquivoFileChooser.getAbsolutePath());
 					} catch (IOException e) {
@@ -162,6 +164,7 @@ public class PrincipalForm extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				limparConsole();
+				tableAnalisadorLexico.limparTabela();
 				analisarLexico();
 				analisarSintatico();
 			}
@@ -185,8 +188,8 @@ public class PrincipalForm extends JFrame {
 				}
 
 				limparConsole();
+				limparTabelas();
 				analisarLexico();
-				tableAnalisadorSintatico.limparTabela();
 				tableAnalisadorSintatico.adicionarLinha(new Object[] { 52, "PROGRAMA" });
 
 				tableAnalisadorLexico.setVisible(debugAtivo);
@@ -211,6 +214,7 @@ public class PrincipalForm extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				limparConsole();
+				limparTabelas();
 				textAreaConsole.setText("Execução parada.");
 				textAreaConsole.setForeground(Color.red);
 			}
@@ -293,7 +297,6 @@ public class PrincipalForm extends JFrame {
 
 		// Aba Console e TextArea
 		tabPaneConsole = new JTabbedPane(JTabbedPane.TOP);
-		tabPaneConsole.setAutoscrolls(true);
 		tabPaneConsole.setBackground(Color.WHITE);
 		textAreaConsole = new JTextArea();
 		textAreaConsole.setBackground(new Color(221, 221, 221));
@@ -369,32 +372,72 @@ public class PrincipalForm extends JFrame {
 	}
 
 	private void analisarSintatico() {
-		while(tableAnalisadorSintatico.getRowCount() != 0) {
+		if(tableAnalisadorSintatico.getRowCount() == 0) {
+			tableAnalisadorSintatico.adicionarLinha(new Object[] { 52, "PROGRAMA" });
+		}
+		
+		while (tableAnalisadorLexico.getRowCount() != 0 && erroLexico == false) {
 			analisarSintaticoDebug();
 		}
+
+		textAreaConsole.append("Análise Sintática Finalizada.");
+
 	}
 
+//	private void analisarSintatico() {
+//		new Thread(new Runnable() {
+//
+//			@Override
+//			public void run() {
+//				try {
+//					while (!Thread.currentThread().isInterrupted()) {
+//						
+//						try {
+//							Thread.sleep(500);
+//						} catch (InterruptedException e) {
+//							throw e;
+//						}
+//						
+//				analisarSintaticoDebug();
+//
+//					if(tableAnalisadorLexico.getRowCount() == 0 || erroLexico == true) {
+//						textAreaConsole.append("Análise Sintática Finalizada.");
+//						break;
+//					}
+//				}
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
+//	},"Teste.arquivosPastaPrincipal").start();
+//	}
+
 	private void analisarSintaticoDebug() {
-		//TODO: Tratar erros de validação sintatica
 		if (tokensTerminais.getSimbolo(tableAnalisadorSintatico.getValorLinhaSelecionada(0)) != null) {
 			if (tableAnalisadorSintatico.getValorLinhaSelecionada(0) == tableAnalisadorLexico
 					.getValorLinhaSelecionada(0)) {
 				excluirLinhasIniciaisTabelas();
 			} else {
-				textAreaConsole.append("Erro na linha " + tableAnalisadorLexico.getValorLinhaSelecionada(2));
+				erroLexico = true;
+				textAreaConsole.append("Erro na linha " + tableAnalisadorLexico.getValorLinhaSelecionada(2) + "\n");
 			}
-		} else if (tokensNaoTerminais
-				.getSimbolo(tableAnalisadorSintatico.getValorLinhaSelecionada(0)) != null) {
+		} else if (tokensNaoTerminais.getSimbolo(tableAnalisadorSintatico.getValorLinhaSelecionada(0)) != null) {
 			matrizProd = getDerivacoes(tableAnalisadorSintatico.getValorLinhaSelecionada(0),
 					tableAnalisadorLexico.getValorLinhaSelecionada(0));
 			if (matrizProd != null) {
-				if (matrizProd[0] == "NULL") {
+				textAreaConsole.append("[ " + tableAnalisadorSintatico.getValorLinhaSelecionada(0) + ","
+						+ tableAnalisadorLexico.getValorLinhaSelecionada(0) + "] Derivou em ");
+						for(String s : matrizProd ) {
+							textAreaConsole.append(s + "|");
+						}
+						textAreaConsole.append("\n");
+				if (matrizProd[0] == "NULL") { // .equals
 					tableAnalisadorSintatico.excluirLinhasSelecionadas();
 					tableAnalisadorSintatico.selecionaPrimeiraLinha();
 				} else {
 					tableAnalisadorSintatico.excluirLinhasSelecionadas();
 					tableAnalisadorSintatico.selecionaPrimeiraLinha();
-					
+
 					for (int i = matrizProd.length - 1; i > -1; i--) {
 						if (tokensNaoTerminais.getCodToken(matrizProd[i]) == 0) {
 							codAux = tokensTerminais.getCodToken(matrizProd[i]);
@@ -408,7 +451,8 @@ public class PrincipalForm extends JFrame {
 				}
 				tableAnalisadorSintatico.selecionaPrimeiraLinha();
 			} else {
-				textAreaConsole.append("Erro na linha " + tableAnalisadorLexico.getValorLinhaSelecionada(2));
+				erroLexico = true;
+				textAreaConsole.append("Erro na linha " + tableAnalisadorLexico.getValorLinhaSelecionada(2) + "\n");
 			}
 		}
 
@@ -439,6 +483,9 @@ public class PrincipalForm extends JFrame {
 
 	private void limparConsole() {
 		textAreaConsole.setText("");
+	}
+
+	private void limparTabelas() {
 		tableAnalisadorLexico.limparTabela();
 		tableAnalisadorSintatico.limparTabela();
 	}
