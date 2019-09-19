@@ -6,6 +6,7 @@ public final class MasterImage extends ImageIcon {
 	private static final long serialVersionUID = -1243931450819789591L;
 
 	// 13x13
+	public static final MasterImage iconePrincipal = LoadImage("iconeCompila.png");
 	public static final MasterImage novo = LoadImage("novo.png");
 	public static final MasterImage abrir = LoadImage("pasta_criar.png");
 	public static final MasterImage salvar = LoadImage("salvar.png");

@@ -20,6 +20,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import br.com.compilador.analisadores.AnalisadorLexico;
@@ -52,6 +54,7 @@ public class PrincipalForm extends JFrame {
 	private TextLineNumber bordaCountLinhas; // Borda de Números
 
 	// Tabelas
+	private JPanel painelSintatico, painelLexico;
 	private TableAnalisadorSintatico tableAnalisadorSintatico;
 	private TableAnalisadorLexico tableAnalisadorLexico;
 	private JScrollPane scrollTableAnalisadorLexico, scrollTableAnalisadorSintatico;
@@ -70,13 +73,16 @@ public class PrincipalForm extends JFrame {
 	private TokensNaoTerminais tokensNaoTerminais = new TokensNaoTerminais();
 	private TokensTerminais tokensTerminais = new TokensTerminais();
 	private boolean debugAtivo = false, erroLexico = false;
+	private JScrollPane scrollPane;
+	private JPanel panel;
 
 	public PrincipalForm() {
 		setTitle("Compilador LMS v1.0.0-betha");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1091, 581);
+		setBounds(100, 100, 1920, 1350);
 		setExtendedState(MAXIMIZED_BOTH);
 		setLocationRelativeTo(null);
+		setIconImage(MasterImage.iconePrincipal.getImage());
 
 		criarComponentes();
 		acoesComponentes();
@@ -194,8 +200,10 @@ public class PrincipalForm extends JFrame {
 
 				tableAnalisadorLexico.setVisible(debugAtivo);
 				scrollTableAnalisadorLexico.setVisible(debugAtivo);
+				painelSintatico.setVisible(debugAtivo);
 				tableAnalisadorSintatico.setVisible(debugAtivo);
 				scrollTableAnalisadorSintatico.setVisible(debugAtivo);
+				painelLexico.setVisible(debugAtivo);
 				painelBotoes.repaint();
 				painelBotoes.revalidate();
 			}
@@ -233,44 +241,6 @@ public class PrincipalForm extends JFrame {
 		painelPrincipal = new JPanel();
 		setContentPane(painelPrincipal);
 
-		// Painel dos botões
-		painelBotoes = new JPanel();
-
-		// Botões principais
-		btnNovo = new JButton(MasterImage.novo);
-		btnNovo.setToolTipText("Novo");
-		btnNovo.setFocusable(false);
-
-		btnAbrir = new JButton(MasterImage.abrir);
-		btnAbrir.setToolTipText("Abrir");
-		btnAbrir.setFocusable(false);
-
-		btnSalvar = new JButton(MasterImage.salvar);
-		btnSalvar.setToolTipText("Salvar");
-		btnSalvar.setFocusable(false);
-
-		btnExecutar = new JButton(MasterImage.executar);
-		btnExecutar.setToolTipText("Executar");
-		btnExecutar.setFocusable(false);
-
-		btnDebug = new JButton(MasterImage.debugOff);
-		btnDebug.setToolTipText("Debug OFF");
-		btnDebug.setFocusable(false);
-
-		btnResumeProx = new JButton(MasterImage.resumeProx);
-		btnResumeProx.setToolTipText("Resume/Próximo");
-		btnResumeProx.setFocusable(false);
-		btnResumeProx.setEnabled(false);
-
-		btnParar = new JButton(MasterImage.parar);
-		btnParar.setToolTipText("Parar");
-		btnParar.setFocusable(false);
-		btnParar.setEnabled(false);
-
-		btnSair = new JButton(MasterImage.sair);
-		btnSair.setToolTipText("Sair");
-		btnSair.setFocusable(false);
-
 		// TextArea principal do compilador
 		textAreaPrincipal = new JTextArea();
 		textAreaPrincipal.setFont(getDefaultFont()); // Fonte padrão
@@ -280,70 +250,179 @@ public class PrincipalForm extends JFrame {
 		scrollPaneTextCompilador.setRowHeaderView(bordaCountLinhas);
 
 		// Tabela do Analisador Lexico
-		tableAnalisadorLexico = new TableAnalisadorLexico();
-		painelPrincipal.add(tableAnalisadorLexico);
-		tableAnalisadorLexico.setVisible(false);
-		scrollTableAnalisadorLexico = new JScrollPane(tableAnalisadorLexico);
-		scrollTableAnalisadorLexico.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scrollTableAnalisadorLexico.setVisible(false);
-
-		// Tabela do Analisador Sintatico
-		tableAnalisadorSintatico = new TableAnalisadorSintatico();
-		painelPrincipal.add(tableAnalisadorSintatico);
-		tableAnalisadorSintatico.setVisible(false);
-		scrollTableAnalisadorSintatico = new JScrollPane(tableAnalisadorSintatico);
-		scrollTableAnalisadorSintatico.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scrollTableAnalisadorSintatico.setVisible(false);
-
+		painelSintatico = new JPanel();
+		painelSintatico.setBorder(new TitledBorder(new BevelBorder(BevelBorder.RAISED), "Analisador Sint\u00E1tico", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		painelSintatico.setVisible(false);
+		
 		// Aba Console e TextArea
 		tabPaneConsole = new JTabbedPane(JTabbedPane.TOP);
 		tabPaneConsole.setBackground(Color.WHITE);
+		
+		painelLexico = new JPanel();
+		painelLexico.setBorder(new TitledBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null), "Analisador L\u00E9xico", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		painelLexico.setVisible(false);
+		
+		panel = new JPanel();
+		panel.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Menu", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
+
+		
+		GroupLayout gl_painel = new GroupLayout(painelPrincipal);
+		gl_painel.setHorizontalGroup(
+			gl_painel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_painel.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_painel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_painel.createSequentialGroup()
+							.addGroup(gl_painel.createParallelGroup(Alignment.TRAILING)
+								.addComponent(scrollPaneTextCompilador, GroupLayout.DEFAULT_SIZE, 1085, Short.MAX_VALUE)
+								.addComponent(tabPaneConsole, GroupLayout.DEFAULT_SIZE, 1085, Short.MAX_VALUE))
+							.addGap(18))
+						.addGroup(gl_painel.createSequentialGroup()
+							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 488, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)))
+					.addGroup(gl_painel.createParallelGroup(Alignment.LEADING)
+						.addComponent(painelSintatico, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(painelLexico, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap())
+		);
+		gl_painel.setVerticalGroup(
+			gl_painel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_painel.createSequentialGroup()
+					.addGroup(gl_painel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_painel.createSequentialGroup()
+							.addGap(53)
+							.addGroup(gl_painel.createParallelGroup(Alignment.TRAILING)
+								.addGroup(gl_painel.createSequentialGroup()
+									.addGap(23)
+									.addComponent(scrollPaneTextCompilador, GroupLayout.PREFERRED_SIZE, 479, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED, 65, Short.MAX_VALUE)
+									.addComponent(tabPaneConsole, GroupLayout.PREFERRED_SIZE, 118, GroupLayout.PREFERRED_SIZE))
+								.addGroup(gl_painel.createSequentialGroup()
+									.addComponent(painelSintatico, GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE)
+									.addGap(18)
+									.addComponent(painelLexico, GroupLayout.PREFERRED_SIZE, 305, GroupLayout.PREFERRED_SIZE))))
+						.addGroup(gl_painel.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 57, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap())
+		);
+		
+				// Painel dos botões
+				painelBotoes = new JPanel();
+				
+						// Botões principais
+						btnNovo = new JButton(MasterImage.novo);
+						btnNovo.setToolTipText("Novo");
+						btnNovo.setFocusable(false);
+						
+								btnAbrir = new JButton(MasterImage.abrir);
+								btnAbrir.setToolTipText("Abrir");
+								btnAbrir.setFocusable(false);
+								
+										btnSalvar = new JButton(MasterImage.salvar);
+										btnSalvar.setToolTipText("Salvar");
+										btnSalvar.setFocusable(false);
+										
+												btnExecutar = new JButton(MasterImage.executar);
+												btnExecutar.setToolTipText("Executar");
+												btnExecutar.setFocusable(false);
+												
+														btnDebug = new JButton(MasterImage.debugOff);
+														btnDebug.setToolTipText("Debug OFF");
+														btnDebug.setFocusable(false);
+														
+																btnResumeProx = new JButton(MasterImage.resumeProx);
+																btnResumeProx.setToolTipText("Resume/Próximo");
+																btnResumeProx.setFocusable(false);
+																btnResumeProx.setEnabled(false);
+																
+																		btnParar = new JButton(MasterImage.parar);
+																		btnParar.setToolTipText("Parar");
+																		btnParar.setFocusable(false);
+																		btnParar.setEnabled(false);
+																		
+																				btnSair = new JButton(MasterImage.sair);
+																				btnSair.setToolTipText("Sair");
+																				btnSair.setFocusable(false);
+																				painelBotoes.setLayout(new GridLayout(0, 8, 0, 0));
+																				painelBotoes.add(btnNovo);
+																				painelBotoes.add(btnAbrir);
+																				painelBotoes.add(btnSalvar);
+																				painelBotoes.add(btnExecutar);
+																				painelBotoes.add(btnDebug);
+																				painelBotoes.add(btnResumeProx);
+																				painelBotoes.add(btnParar);
+																				painelBotoes.add(btnSair);
+																				GroupLayout gl_panelmenu2 = new GroupLayout(panel);
+																				gl_panelmenu2.setHorizontalGroup(
+																						gl_panelmenu2.createParallelGroup(Alignment.LEADING)
+																						.addGroup(gl_panelmenu2.createSequentialGroup()
+																							.addContainerGap()
+																							.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+																							.addContainerGap(85, Short.MAX_VALUE))
+																				);
+																				gl_panelmenu2.setVerticalGroup(
+																						gl_panelmenu2.createParallelGroup(Alignment.LEADING)
+																						.addGroup(gl_panelmenu2.createSequentialGroup()
+																							.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+																							.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+																				);
+																				panel.setLayout(gl_panelmenu2);
+		
+		scrollPane = new JScrollPane();
+		tabPaneConsole.addTab("Console", null, scrollPane, null);
 		textAreaConsole = new JTextArea();
+		scrollPane.setViewportView(textAreaConsole);
 		textAreaConsole.setBackground(new Color(221, 221, 221));
 		textAreaConsole.setFont(getDefaultFont());
 		textAreaConsole.setEditable(false);
-		tabPaneConsole.addTab("Console", MasterImage.monitor, textAreaConsole, "");
-		tabPaneConsole.setEnabledAt(0, true);
-
-		GroupLayout gl_painel = new GroupLayout(painelPrincipal);
-		gl_painel.setHorizontalGroup(gl_painel.createParallelGroup(Alignment.LEADING).addGroup(gl_painel
-				.createSequentialGroup().addContainerGap()
-				.addGroup(gl_painel.createParallelGroup(Alignment.LEADING).addGroup(gl_painel.createSequentialGroup()
-						.addGroup(gl_painel.createParallelGroup(Alignment.TRAILING)
-								.addComponent(scrollPaneTextCompilador, GroupLayout.DEFAULT_SIZE, 802, Short.MAX_VALUE)
-								.addComponent(tabPaneConsole, GroupLayout.DEFAULT_SIZE, 802, Short.MAX_VALUE))
-						.addGap(18)
-						.addGroup(gl_painel.createParallelGroup(Alignment.LEADING)
-								.addComponent(scrollTableAnalisadorSintatico, GroupLayout.PREFERRED_SIZE, 234,
-										GroupLayout.PREFERRED_SIZE)
-								.addComponent(scrollTableAnalisadorLexico, GroupLayout.PREFERRED_SIZE, 235,
-										GroupLayout.PREFERRED_SIZE)))
-						.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, 470, GroupLayout.PREFERRED_SIZE))
-				.addContainerGap()));
-		gl_painel.setVerticalGroup(gl_painel.createParallelGroup(Alignment.LEADING).addGroup(gl_painel
-				.createSequentialGroup().addContainerGap()
-				.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(ComponentPlacement.RELATED)
-				.addGroup(gl_painel.createParallelGroup(Alignment.TRAILING).addGroup(gl_painel.createSequentialGroup()
-						.addComponent(scrollPaneTextCompilador, GroupLayout.PREFERRED_SIZE, 502,
-								GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(tabPaneConsole, GroupLayout.PREFERRED_SIZE, 129, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_painel.createSequentialGroup()
-								.addComponent(scrollTableAnalisadorSintatico, GroupLayout.DEFAULT_SIZE, 303,
-										Short.MAX_VALUE)
-								.addGap(18).addComponent(scrollTableAnalisadorLexico, GroupLayout.PREFERRED_SIZE, 316,
-										GroupLayout.PREFERRED_SIZE)))
-				.addContainerGap()));
-		painelBotoes.setLayout(new GridLayout(0, 8, 0, 0));
-		painelBotoes.add(btnNovo);
-		painelBotoes.add(btnAbrir);
-		painelBotoes.add(btnSalvar);
-		painelBotoes.add(btnExecutar);
-		painelBotoes.add(btnDebug);
-		painelBotoes.add(btnResumeProx);
-		painelBotoes.add(btnParar);
-		painelBotoes.add(btnSair);
+		
+				tableAnalisadorLexico = new TableAnalisadorLexico();
+				painelPrincipal.add(tableAnalisadorLexico);
+				tableAnalisadorLexico.setVisible(false);
+				scrollTableAnalisadorLexico = new JScrollPane(tableAnalisadorLexico);
+				scrollTableAnalisadorLexico.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+				scrollTableAnalisadorLexico.setVisible(false);
+		GroupLayout gl_panelmenu = new GroupLayout(painelLexico);
+		gl_panelmenu.setHorizontalGroup(
+			gl_panelmenu.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panelmenu.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(scrollTableAnalisadorLexico, GroupLayout.PREFERRED_SIZE, 210, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(14, Short.MAX_VALUE))
+		);
+		gl_panelmenu.setVerticalGroup(
+			gl_panelmenu.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_panelmenu.createSequentialGroup()
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addComponent(scrollTableAnalisadorLexico, GroupLayout.PREFERRED_SIZE, 263, GroupLayout.PREFERRED_SIZE)
+					.addGap(42))
+		);
+		painelLexico.setLayout(gl_panelmenu);
+		
+				// Tabela do Analisador Sintatico
+				tableAnalisadorSintatico = new TableAnalisadorSintatico();
+				painelPrincipal.add(tableAnalisadorSintatico);
+				tableAnalisadorSintatico.setVisible(false);
+				scrollTableAnalisadorSintatico = new JScrollPane(tableAnalisadorSintatico);
+				scrollTableAnalisadorSintatico.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+				GroupLayout gl_panel2 = new GroupLayout(painelSintatico);
+				gl_panel2.setHorizontalGroup(
+						gl_panel2.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel2.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(scrollTableAnalisadorSintatico, GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
+							.addContainerGap())
+				);
+				gl_panel2.setVerticalGroup(
+						gl_panel2.createParallelGroup(Alignment.LEADING)
+						.addGroup(Alignment.TRAILING, gl_panel2.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(scrollTableAnalisadorSintatico, GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)
+							.addContainerGap())
+				);
+				painelSintatico.setLayout(gl_panel2);
+				scrollTableAnalisadorSintatico.setVisible(false);
 		painelPrincipal.setLayout(gl_painel);
 	}
 
