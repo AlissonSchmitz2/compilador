@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 import javax.swing.GroupLayout;
@@ -18,11 +20,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.StyledDocument;
 
 import br.com.compilador.analisadores.AnalisadorLexico;
 import br.com.compilador.analisadores.TabelaParsingMatriz;
@@ -31,6 +35,7 @@ import br.com.compilador.analisadores.TokensTerminais;
 import br.com.compilador.image.MasterImage;
 import br.com.compilador.model.Pilha;
 import br.com.compilador.model.PilhaErros;
+import br.com.compilador.util.ColorirPalavras;
 import br.com.compilador.util.ManipularArquivo;
 import br.com.compilador.util.Msg;
 import br.com.compilador.util.TextLineNumber;
@@ -49,7 +54,7 @@ public class PrincipalForm extends JFrame {
 	private File arquivoFileChooser;
 
 	// TextArea Compilador
-	private JTextArea textAreaPrincipal;
+	private JTextPane textAreaPrincipal;
 	private JScrollPane scrollPaneTextCompilador;
 	private TextLineNumber bordaCountLinhas; // Borda de Números
 
@@ -75,6 +80,7 @@ public class PrincipalForm extends JFrame {
 	private boolean debugAtivo = false, erroLexico = false;
 	private JScrollPane scrollPane;
 	private JPanel panel;
+	private ColorirPalavras colorirPalavras = new ColorirPalavras();
 
 	public PrincipalForm() {
 		setTitle("Compilador LMS v1.0.0-betha");
@@ -119,7 +125,7 @@ public class PrincipalForm extends JFrame {
 						limparArea();
 						limparConsole();
 						limparTabelas();
-						textAreaPrincipal.append(texto.toString());
+						textAreaPrincipal.setText(texto.toString());
 						setTitle("Compilador LMS v1.0.0-betha" + " - " + arquivoFileChooser.getAbsolutePath());
 					} catch (IOException e) {
 						new Msg().mensagemErro("Problema ao ler arquivo selecionado!");
@@ -242,7 +248,7 @@ public class PrincipalForm extends JFrame {
 		setContentPane(painelPrincipal);
 
 		// TextArea principal do compilador
-		textAreaPrincipal = new JTextArea();
+		textAreaPrincipal = new JTextPane(getDoc());
 		textAreaPrincipal.setFont(getDefaultFont()); // Fonte padrão
 
 		scrollPaneTextCompilador = new JScrollPane(textAreaPrincipal);
@@ -441,7 +447,9 @@ public class PrincipalForm extends JFrame {
 					textAreaConsole.setText(p.getErro() + p.getLinha() + "\n");
 				}
 			} else {
-				textAreaConsole.append("Analisador Léxico Finalizado.\n");
+				if(tableAnalisadorLexico.getRowCount() != 0) {
+					textAreaConsole.append("Análise Léxica Finalizada.\n");
+				}
 			}
 			tableAnalisadorLexico.selecionaPrimeiraLinha();
 			analisadorLexico = null;
@@ -458,8 +466,6 @@ public class PrincipalForm extends JFrame {
 		while (tableAnalisadorLexico.getRowCount() != 0 && erroLexico == false) {
 			analisarSintaticoDebug();
 		}
-
-		textAreaConsole.append("Análise Sintática Finalizada.");
 
 	}
 
@@ -492,6 +498,11 @@ public class PrincipalForm extends JFrame {
 //	}
 
 	private void analisarSintaticoDebug() {
+		
+		if(tableAnalisadorLexico.getRowCount() == 0) {
+			return;
+		}
+		
 		if (tokensTerminais.getSimbolo(tableAnalisadorSintatico.getValorLinhaSelecionada(0)) != null) {
 			if (tableAnalisadorSintatico.getValorLinhaSelecionada(0) == tableAnalisadorLexico
 					.getValorLinhaSelecionada(0)) {
@@ -534,6 +545,10 @@ public class PrincipalForm extends JFrame {
 				textAreaConsole.append("Erro na linha " + tableAnalisadorLexico.getValorLinhaSelecionada(2) + "\n");
 			}
 		}
+		
+		if(tableAnalisadorLexico.getRowCount() == 0 && tableAnalisadorSintatico.getRowCount() == 0) {
+			textAreaConsole.append("Análise Sintática Finalizada.");
+		}
 
 		matrizProd = null;
 	}
@@ -571,6 +586,20 @@ public class PrincipalForm extends JFrame {
 
 	private void limparArea() {
 		textAreaPrincipal.setText("");
+	}
+	
+	private StyledDocument getDoc() {
+		HashMap<String, Integer> mapTokens = tokensTerminais.getMap();
+		String palavras="";
+		for (Map.Entry<String, Integer> candidatoEntry : mapTokens.entrySet()) { 
+			if(candidatoEntry.getValue() < 30 && !candidatoEntry.getKey().equals("INTEIRO") && !candidatoEntry.getKey().equals("IDENTIFICADOR")) {
+//			System.out.println(candidatoEntry.getKey() + "=" + candidatoEntry.getValue());
+				palavras += candidatoEntry.getKey() + "|";
+			}
+		}
+		palavras = palavras.substring(0, palavras.length()-1);
+		
+		return colorirPalavras.colorir(Color.BLUE, palavras);
 	}
 
 	private Font getDefaultFont() {

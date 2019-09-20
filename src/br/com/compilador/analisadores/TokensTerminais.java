@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TokensTerminais {
-	public static HashMap<String, Integer> mapTokens = new HashMap<String, Integer>();
+	private static HashMap<String, Integer> mapTokens = new HashMap<String, Integer>();
 
 	public TokensTerminais() {
 		criarTokens();
@@ -84,4 +84,8 @@ public class TokensTerminais {
 
 		return null;
 	}
+
+	public HashMap<String, Integer> getMap(){
+		return mapTokens;
+	}	
 }
