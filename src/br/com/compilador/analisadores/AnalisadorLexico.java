@@ -157,12 +157,15 @@ public class AnalisadorLexico {
 						}
 					}
 
+					try {
 					if (Double.parseDouble(palavras) > -32768 && Double.parseDouble(palavras) < 32768) {
 						adicionarPilhaPrincipal(26);
 					} else {
 						pilhaErros.add(new PilhaErros("Erro de número fora de escala na linha: ", numLinha));
 						freio = true;
 						break;
+					}}catch (NumberFormatException e) {
+						// TODO: handle exception
 					}
 
 					palavras = "";

@@ -130,6 +130,7 @@ public class PrincipalForm extends JFrame {
 					} catch (IOException e) {
 						new Msg().mensagemErro("Problema ao ler arquivo selecionado!");
 					}
+					adicionarLinhaPadraoSintatico();
 				} else {
 					new Msg().mensagemAviso("Seleção do arquivo cancelada!");
 				}
@@ -175,6 +176,7 @@ public class PrincipalForm extends JFrame {
 		btnExecutar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				textAreaConsole.setForeground(Color.black);
 				limparConsole();
 				tableAnalisadorLexico.limparTabela();
 				analisarLexico();
@@ -185,6 +187,7 @@ public class PrincipalForm extends JFrame {
 		btnDebug.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				textAreaConsole.setForeground(Color.black);
 				if (debugAtivo) {
 					debugAtivo = false;
 					btnDebug.setIcon(MasterImage.debugOff);
@@ -433,6 +436,11 @@ public class PrincipalForm extends JFrame {
 	}
 
 	private void analisarLexico() {
+		
+		if(tableAnalisadorLexico.getRowCount() != 0) {
+			return;
+		}
+		
 		if (analisadorLexico == null) {
 			analisadorLexico = new AnalisadorLexico();
 		}
@@ -449,6 +457,7 @@ public class PrincipalForm extends JFrame {
 			} else {
 				if(tableAnalisadorLexico.getRowCount() != 0) {
 					textAreaConsole.append("Análise Léxica Finalizada.\n");
+					erroLexico = false;
 				}
 			}
 			tableAnalisadorLexico.selecionaPrimeiraLinha();
@@ -459,9 +468,7 @@ public class PrincipalForm extends JFrame {
 	}
 
 	private void analisarSintatico() {
-		if(tableAnalisadorSintatico.getRowCount() == 0) {
-			tableAnalisadorSintatico.adicionarLinha(new Object[] { 52, "PROGRAMA" });
-		}
+		adicionarLinhaPadraoSintatico();
 		
 		while (tableAnalisadorLexico.getRowCount() != 0 && erroLexico == false) {
 			analisarSintaticoDebug();
@@ -593,13 +600,18 @@ public class PrincipalForm extends JFrame {
 		String palavras="";
 		for (Map.Entry<String, Integer> candidatoEntry : mapTokens.entrySet()) { 
 			if(candidatoEntry.getValue() < 30 && !candidatoEntry.getKey().equals("INTEIRO") && !candidatoEntry.getKey().equals("IDENTIFICADOR")) {
-//			System.out.println(candidatoEntry.getKey() + "=" + candidatoEntry.getValue());
 				palavras += candidatoEntry.getKey() + "|";
 			}
 		}
 		palavras = palavras.substring(0, palavras.length()-1);
 		
 		return colorirPalavras.colorir(Color.BLUE, palavras);
+	}
+	
+	private void adicionarLinhaPadraoSintatico() {
+		if(tableAnalisadorSintatico.getRowCount() == 0) {
+			tableAnalisadorSintatico.adicionarLinha(new Object[] { 52, "PROGRAMA" });
+		}
 	}
 
 	private Font getDefaultFont() {

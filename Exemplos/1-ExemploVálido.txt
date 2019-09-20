@@ -1,21 +1,17 @@
-(*TESTE - Exemplo Valido
-
-abcd*)
+(*TESTE - Exemplo VÃ¡lido*)
 PROGRAM TESTE123;
-:=>=<=<>..
 	LABEL
-		label_a,label_b;
+		label_a, label_b;
 	
 	CONST
-		c := 'Joao e maria';
-		a := -100;
-		b := -200;
+		a = -100;
+		b = -200;
 	VAR 
 		 X, Y, Z : INTEGER;
 		array_a : ARRAY[0..20] OF INTEGER;
 		array_b, array_c, array_d : ARRAY[0..1000] OF INTEGER;
 	
-	(*Declaração de procedure, inicia novo bloco*)
+	(*DeclaraÃ§Ã£o de procedure, inicia novo bloco*)
 	PROCEDURE p_teste(idd : INTEGER);
 		LABEL
 			label_a, label_b;
@@ -34,7 +30,7 @@ PROGRAM TESTE123;
 	END;
 
 (*	
-	- Início do bloco principal
+	- InÃ­cio do bloco principal
 *)
 
 BEGIN
@@ -63,7 +59,7 @@ BEGIN
 	REPEAT 
 	BEGIN 
 	END
-	UNTIL X >a 10;
+	UNTIL X > 10;
 
 	(*Testa as possibilidades do WRITELN*)
 	WRITELN(X,Z,Y);
