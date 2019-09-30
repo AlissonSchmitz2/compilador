@@ -131,6 +131,8 @@ public class PrincipalForm extends JFrame {
 						new Msg().mensagemErro("Problema ao ler arquivo selecionado!");
 					}
 					adicionarLinhaPadraoSintatico();
+					tableAnalisadorLexico.limparTabela();
+					analisarLexico();
 				} else {
 					new Msg().mensagemAviso("Seleção do arquivo cancelada!");
 				}
@@ -522,7 +524,7 @@ public class PrincipalForm extends JFrame {
 			matrizProd = getDerivacoes(tableAnalisadorSintatico.getValorLinhaSelecionada(0),
 					tableAnalisadorLexico.getValorLinhaSelecionada(0));
 			if (matrizProd != null) {
-				textAreaConsole.append("[ " + tableAnalisadorSintatico.getValorLinhaSelecionada(0) + ","
+				textAreaConsole.append("[" + tableAnalisadorSintatico.getValorLinhaSelecionada(0) + ","
 						+ tableAnalisadorLexico.getValorLinhaSelecionada(0) + "] Derivou em ");
 						for(String s : matrizProd ) {
 							textAreaConsole.append(s + "|");
@@ -550,6 +552,12 @@ public class PrincipalForm extends JFrame {
 			} else {
 				erroLexico = true;
 				textAreaConsole.append("Erro na linha " + tableAnalisadorLexico.getValorLinhaSelecionada(2) + "\n");
+				//(*A derivao [66,26] 'COMANDO,INTEIRO' no foi encontrada na tabela de parsing.*)
+				textAreaConsole.append("A derivação [" + tableAnalisadorSintatico.getValorLinhaSelecionada(0) + ","
+						+ tableAnalisadorLexico.getValorLinhaSelecionada(0) + "] \'"+
+						tokensNaoTerminais.getSimbolo(tableAnalisadorSintatico.getValorLinhaSelecionada(0))+ ","+
+						tokensTerminais.getSimbolo(tableAnalisadorLexico.getValorLinhaSelecionada(0))+
+						"\' Não foi encontrada na tabela de parsing.");
 			}
 		}
 		
