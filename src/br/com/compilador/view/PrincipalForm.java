@@ -49,7 +49,7 @@ public class PrincipalForm extends JFrame {
 	private JPanel painelPrincipal, painelBotoes;
 	private JButton btnNovo, btnAbrir, btnSalvar, btnExecutar, btnDebug, btnResumeProx, btnParar, btnSair;
 
-	// Componentes btnAbrir
+	// Componentes
 	private JFileChooser fileChooser;
 	private File arquivoFileChooser;
 
@@ -74,7 +74,7 @@ public class PrincipalForm extends JFrame {
 
 	// Auxiliares
 	private String[] matrizProd;
-	private int codAux;
+	private int codAux, auxLinha = 0;;
 	private TokensNaoTerminais tokensNaoTerminais = new TokensNaoTerminais();
 	private TokensTerminais tokensTerminais = new TokensTerminais();
 	private boolean debugAtivo = false, erroLexico = false;
@@ -516,10 +516,14 @@ public class PrincipalForm extends JFrame {
 		if (tokensTerminais.getSimbolo(tableAnalisadorSintatico.getValorLinhaSelecionada(0)) != null) {
 			if (tableAnalisadorSintatico.getValorLinhaSelecionada(0) == tableAnalisadorLexico
 					.getValorLinhaSelecionada(0)) {
+				auxLinha = tableAnalisadorLexico.getValorLinhaSelecionada(2);
 				excluirLinhasIniciaisTabelas();
 			} else {
 				erroLexico = true;
-				textAreaConsole.append("Erro na linha " + tableAnalisadorLexico.getValorLinhaSelecionada(2) + "\n");
+				auxLinha = auxLinha != tableAnalisadorLexico.getValorLinhaSelecionada(2) ? auxLinha : tableAnalisadorLexico.getValorLinhaSelecionada(2);
+				textAreaConsole.append("Erro na linha " + auxLinha
+						+ ", encontrado " + "\" " + tokensTerminais.getSimbolo(tableAnalisadorLexico.getValorLinhaSelecionada(0)) + " \"" + " e esperado "
+						+ "\" " + tokensTerminais.getSimbolo(tableAnalisadorSintatico.getValorLinhaSelecionada(0)) + " \" \n");
 			}
 		} else if (tokensNaoTerminais.getSimbolo(tableAnalisadorSintatico.getValorLinhaSelecionada(0)) != null) {
 			matrizProd = getDerivacoes(tableAnalisadorSintatico.getValorLinhaSelecionada(0),
@@ -552,8 +556,8 @@ public class PrincipalForm extends JFrame {
 				tableAnalisadorSintatico.selecionaPrimeiraLinha();
 			} else {
 				erroLexico = true;
-				textAreaConsole.append("Erro na linha " + tableAnalisadorLexico.getValorLinhaSelecionada(2) + "\n");
-				textAreaConsole.append("A derivação [" + tableAnalisadorSintatico.getValorLinhaSelecionada(0) + ","
+				textAreaConsole.append("Erro na linha " + tableAnalisadorLexico.getValorLinhaSelecionada(2));
+				textAreaConsole.append(" A derivação [" + tableAnalisadorSintatico.getValorLinhaSelecionada(0) + ","
 						+ tableAnalisadorLexico.getValorLinhaSelecionada(0) + "] \'"+
 						tokensNaoTerminais.getSimbolo(tableAnalisadorSintatico.getValorLinhaSelecionada(0))+ ","+
 						tokensTerminais.getSimbolo(tableAnalisadorLexico.getValorLinhaSelecionada(0))+
@@ -613,7 +617,7 @@ public class PrincipalForm extends JFrame {
 		}
 		palavras = palavras.substring(0, palavras.length()-1);
 		
-		return colorirPalavras.colorir(Color.BLUE, palavras);
+		return  colorirPalavras.colorir(Color.BLUE, palavras);
 	}
 	
 	private void adicionarLinhaPadraoSintatico() {
