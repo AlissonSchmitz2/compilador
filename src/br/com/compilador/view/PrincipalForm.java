@@ -182,6 +182,7 @@ public class PrincipalForm extends JFrame {
 				limparConsole();
 				tableAnalisadorLexico.limparTabela();
 				analisarLexico();
+				tableAnalisadorSintatico.limparTabela();
 				analisarSintatico();
 			}
 		});
@@ -274,7 +275,7 @@ public class PrincipalForm extends JFrame {
 		painelLexico.setVisible(false);
 		
 		panel = new JPanel();
-		panel.setBorder(new TitledBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), "Menu", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panel.setBorder(new TitledBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null), "Menu", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
 
 		
 		GroupLayout gl_painel = new GroupLayout(painelPrincipal);
@@ -552,7 +553,6 @@ public class PrincipalForm extends JFrame {
 			} else {
 				erroLexico = true;
 				textAreaConsole.append("Erro na linha " + tableAnalisadorLexico.getValorLinhaSelecionada(2) + "\n");
-				//(*A derivao [66,26] 'COMANDO,INTEIRO' no foi encontrada na tabela de parsing.*)
 				textAreaConsole.append("A derivação [" + tableAnalisadorSintatico.getValorLinhaSelecionada(0) + ","
 						+ tableAnalisadorLexico.getValorLinhaSelecionada(0) + "] \'"+
 						tokensNaoTerminais.getSimbolo(tableAnalisadorSintatico.getValorLinhaSelecionada(0))+ ","+
