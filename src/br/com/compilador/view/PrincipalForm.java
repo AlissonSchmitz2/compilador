@@ -45,7 +45,7 @@ import br.com.compilador.view.table.TableAnalisadorSintatico;
 public class PrincipalForm extends JFrame {
 	private static final long serialVersionUID = -4121820897834715812L;
 
-	// Componentes
+	//Componentes
 	private JPanel painelPrincipal, painelBotoes;
 	private JButton btnNovo, btnAbrir, btnSalvar, btnExecutar, btnDebug, btnResumeProx, btnParar, btnSair;
 
@@ -74,6 +74,7 @@ public class PrincipalForm extends JFrame {
 
 	// Auxiliares
 	private String[] matrizProd;
+	private String caminhoArquivo = "";
 	private int codAux, auxLinha = 0;;
 	private TokensNaoTerminais tokensNaoTerminais = new TokensNaoTerminais();
 	private TokensTerminais tokensTerminais = new TokensTerminais();
@@ -104,6 +105,7 @@ public class PrincipalForm extends JFrame {
 				limparConsole();
 				limparTabelas();
 				setTitle("Compilador LMS v1.0.0-betha");
+				caminhoArquivo = "";
 			}
 		});
 
@@ -127,6 +129,7 @@ public class PrincipalForm extends JFrame {
 						limparTabelas();
 						textAreaPrincipal.setText(texto.toString());
 						setTitle("Compilador LMS v1.0.0-betha" + " - " + arquivoFileChooser.getAbsolutePath());
+						caminhoArquivo = arquivoFileChooser.getAbsolutePath();
 					} catch (IOException e) {
 						new Msg().mensagemErro("Problema ao ler arquivo selecionado!");
 					}
@@ -143,6 +146,7 @@ public class PrincipalForm extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
 				fileChooser = new JFileChooser();
 				fileChooser.setDialogTitle("Selecione a pasta");
 				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -151,24 +155,22 @@ public class PrincipalForm extends JFrame {
 				fileChooser.setFileFilter(filter);
 
 				fileChooser.setFileFilter(new FileNameExtensionFilter("Arquivo Código(*.txt)", "txt"));
-
+				
+				if(!caminhoArquivo.isEmpty()) {
+					gravarArquivo();
+					return;
+				}
+				
 				if (fileChooser.showSaveDialog(PrincipalForm.this) == JFileChooser.APPROVE_OPTION) {
 					arquivoFileChooser = fileChooser.getSelectedFile();
-					String caminhoArquivo = arquivoFileChooser.getAbsolutePath();
+					
+					caminhoArquivo = arquivoFileChooser.getAbsolutePath();
 
 					if (!caminhoArquivo.endsWith(".txt")) {
 						caminhoArquivo += ".txt";
 					}
 
-					try {
-						new ManipularArquivo();
-						ManipularArquivo.gravarArquivo(caminhoArquivo, textAreaPrincipal.getText());
-
-						new Msg().mensagemSucesso("Arquivo Salvo com Sucesso!");
-					} catch (IOException e) {
-						new Msg().mensagemErro("Problema ao gravar arquivo!");
-					}
-
+					gravarArquivo();
 				} else {
 					new Msg().mensagemAviso("Salvamento cancelado!");
 				}
@@ -605,6 +607,17 @@ public class PrincipalForm extends JFrame {
 
 	private void limparArea() {
 		textAreaPrincipal.setText("");
+	}
+	
+	private void gravarArquivo() {
+		try {
+			new ManipularArquivo();
+			ManipularArquivo.gravarArquivo(caminhoArquivo, textAreaPrincipal.getText());
+
+			new Msg().mensagemSucesso("Arquivo Salvo com Sucesso!");
+		} catch (IOException e) {
+			new Msg().mensagemErro("Problema ao gravar arquivo!");
+		}
 	}
 	
 	private StyledDocument getDoc() {
