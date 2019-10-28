@@ -171,6 +171,7 @@ public class PrincipalForm extends JFrame {
 					}
 
 					gravarArquivo();
+					setTitle("Compilador LMS v1.0.0-betha" + " - " + arquivoFileChooser.getAbsolutePath());
 				} else {
 					new Msg().mensagemAviso("Salvamento cancelado!");
 				}
