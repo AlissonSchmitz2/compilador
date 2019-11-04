@@ -288,13 +288,13 @@ public class PrincipalForm extends JFrame {
 					.addContainerGap()
 					.addGroup(gl_painel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_painel.createSequentialGroup()
-							.addGroup(gl_painel.createParallelGroup(Alignment.TRAILING)
-								.addComponent(scrollPaneTextCompilador, GroupLayout.DEFAULT_SIZE, 1085, Short.MAX_VALUE)
-								.addComponent(tabPaneConsole, GroupLayout.DEFAULT_SIZE, 1085, Short.MAX_VALUE))
-							.addGap(18))
-						.addGroup(gl_painel.createSequentialGroup()
 							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 488, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)))
+							.addPreferredGap(ComponentPlacement.RELATED))
+						.addGroup(Alignment.TRAILING, gl_painel.createSequentialGroup()
+							.addGroup(gl_painel.createParallelGroup(Alignment.TRAILING)
+								.addComponent(scrollPaneTextCompilador, GroupLayout.DEFAULT_SIZE, 1255, Short.MAX_VALUE)
+								.addComponent(tabPaneConsole, GroupLayout.DEFAULT_SIZE, 1255, Short.MAX_VALUE))
+							.addGap(18)))
 					.addGroup(gl_painel.createParallelGroup(Alignment.LEADING)
 						.addComponent(painelSintatico, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(painelLexico, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE))
@@ -309,11 +309,11 @@ public class PrincipalForm extends JFrame {
 							.addGroup(gl_painel.createParallelGroup(Alignment.TRAILING)
 								.addGroup(gl_painel.createSequentialGroup()
 									.addGap(23)
-									.addComponent(scrollPaneTextCompilador, GroupLayout.PREFERRED_SIZE, 479, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED, 65, Short.MAX_VALUE)
+									.addComponent(scrollPaneTextCompilador, GroupLayout.DEFAULT_SIZE, 623, Short.MAX_VALUE)
+									.addGap(18)
 									.addComponent(tabPaneConsole, GroupLayout.PREFERRED_SIZE, 118, GroupLayout.PREFERRED_SIZE))
 								.addGroup(gl_painel.createSequentialGroup()
-									.addComponent(painelSintatico, GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE)
+									.addComponent(painelSintatico, GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE)
 									.addGap(18)
 									.addComponent(painelLexico, GroupLayout.PREFERRED_SIZE, 305, GroupLayout.PREFERRED_SIZE))))
 						.addGroup(gl_painel.createSequentialGroup()
@@ -532,13 +532,15 @@ public class PrincipalForm extends JFrame {
 			matrizProd = getDerivacoes(tableAnalisadorSintatico.getValorLinhaSelecionada(0),
 					tableAnalisadorLexico.getValorLinhaSelecionada(0));
 			if (matrizProd != null) {
+				if(debugAtivo) {
 				textAreaConsole.append("[" + tableAnalisadorSintatico.getValorLinhaSelecionada(0) + ","
 						+ tableAnalisadorLexico.getValorLinhaSelecionada(0) + "] Derivou em ");
 						for(String s : matrizProd ) {
 							textAreaConsole.append(s + "|");
 						}
 						textAreaConsole.append("\n");
-				if (matrizProd[0] == "NULL") { // .equals
+				}
+				if (matrizProd[0].equals("NULL")) {
 					tableAnalisadorSintatico.excluirLinhasSelecionadas();
 					tableAnalisadorSintatico.selecionaPrimeiraLinha();
 				} else {
