@@ -8,7 +8,7 @@
 ##### Apresentação 2 - Analisador Sintático: a definir.
 ##### Apresentação 3 - Analisador Semântico: a definir.
 
-## Tecnologias utilizadas
+## Tecnologia utilizada
 * Java 1.8
 
 ## Documentação:
