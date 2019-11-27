@@ -6,13 +6,13 @@ import javax.swing.BorderFactory;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
-public class TableAnalisadorSintatico extends TablePadrao {
-	private static final long serialVersionUID = 2933701333377663941L;
+public class TableAnalisadorSematico extends TablePadrao {
+	private static final long serialVersionUID = -8575782420229430010L;
 
-	private String colunas[] = { "Código", "Simbolo" };
+	private String colunas[] = { "Nome", "Categoria", "Tipo", "Nível" };
 	private DefaultTableModel model;
 	
-	public TableAnalisadorSintatico() {
+	public TableAnalisadorSematico() {
 		model = new DefaultTableModel(null, colunas) {
 			private static final long serialVersionUID = 3263923956276898672L;
 
@@ -26,4 +26,5 @@ public class TableAnalisadorSintatico extends TablePadrao {
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		setVisible(true);
 	}
+	
 }
