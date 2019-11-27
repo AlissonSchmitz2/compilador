@@ -21,6 +21,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
@@ -39,15 +40,16 @@ import br.com.compilador.util.ManipularArquivo;
 import br.com.compilador.util.Msg;
 import br.com.compilador.util.TextLineNumber;
 import br.com.compilador.view.table.TableAnalisadorLexico;
-import br.com.compilador.view.table.TableAnalisadorSematico;
 import br.com.compilador.view.table.TableAnalisadorSintatico;
 
 public class PrincipalForm extends JFrame {
 	private static final long serialVersionUID = -4121820897834715812L;
 
-	// Componentes
+	//Componentes
 	private JPanel painelPrincipal, painelBotoes;
 	private JButton btnNovo, btnAbrir, btnSalvar, btnExecutar, btnDebug, btnResumeProx, btnParar, btnSair;
+
+	// Componentes
 	private JFileChooser fileChooser;
 	private File arquivoFileChooser;
 
@@ -57,11 +59,10 @@ public class PrincipalForm extends JFrame {
 	private TextLineNumber bordaCountLinhas; // Borda de Números
 
 	// Tabelas
-	private JPanel painelSemantico, painelSintatico, painelLexico;
+	private JPanel painelSintatico, painelLexico;
 	private TableAnalisadorSintatico tableAnalisadorSintatico;
 	private TableAnalisadorLexico tableAnalisadorLexico;
-	private TableAnalisadorSematico tableAnalisadorSematico;
-	private JScrollPane scrollTableAnalisadorSemantico, scrollTableAnalisadorLexico, scrollTableAnalisadorSintatico;
+	private JScrollPane scrollTableAnalisadorLexico, scrollTableAnalisadorSintatico;
 
 	// TextArea Console
 	private JTabbedPane tabPaneConsole;
@@ -100,8 +101,8 @@ public class PrincipalForm extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				textAreaPrincipal.setText(""); // Limpa o console
-				textAreaConsole.setText(""); // Limpa o console
+				limparArea();
+				limparConsole();
 				limparTabelas();
 				setTitle("Compilador LMS v1.0.0-betha");
 				caminhoArquivo = "";
@@ -123,8 +124,8 @@ public class PrincipalForm extends JFrame {
 					try {
 						new ManipularArquivo();
 						StringBuilder texto = ManipularArquivo.lerArquivo(arquivoFileChooser.getAbsolutePath());
-						textAreaPrincipal.setText("");
-						textAreaConsole.setText(""); // Limpa o console
+						limparArea();
+						limparConsole();
 						limparTabelas();
 						textAreaPrincipal.setText(texto.toString());
 						setTitle("Compilador LMS v1.0.0-betha" + " - " + arquivoFileChooser.getAbsolutePath());
@@ -145,7 +146,7 @@ public class PrincipalForm extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-
+				
 				fileChooser = new JFileChooser();
 				fileChooser.setDialogTitle("Selecione a pasta");
 				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -154,15 +155,15 @@ public class PrincipalForm extends JFrame {
 				fileChooser.setFileFilter(filter);
 
 				fileChooser.setFileFilter(new FileNameExtensionFilter("Arquivo Código(*.txt)", "txt"));
-
-				if (!caminhoArquivo.isEmpty()) {
+				
+				if(!caminhoArquivo.isEmpty()) {
 					gravarArquivo();
 					return;
 				}
-
+				
 				if (fileChooser.showSaveDialog(PrincipalForm.this) == JFileChooser.APPROVE_OPTION) {
 					arquivoFileChooser = fileChooser.getSelectedFile();
-
+					
 					caminhoArquivo = arquivoFileChooser.getAbsolutePath();
 
 					if (!caminhoArquivo.endsWith(".txt")) {
@@ -181,7 +182,7 @@ public class PrincipalForm extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				textAreaConsole.setForeground(Color.black);
-				textAreaConsole.setText(""); // Limpa o console
+				limparConsole();
 				tableAnalisadorLexico.limparTabela();
 				analisarLexico();
 				tableAnalisadorSintatico.limparTabela();
@@ -207,14 +208,17 @@ public class PrincipalForm extends JFrame {
 					btnParar.setEnabled(true);
 				}
 
-				textAreaConsole.setText(""); // Limpa o console
+				limparConsole();
 				limparTabelas();
 				analisarLexico();
 				tableAnalisadorSintatico.adicionarLinha(new Object[] { 52, "PROGRAMA" });
 
+				tableAnalisadorLexico.setVisible(debugAtivo);
+				scrollTableAnalisadorLexico.setVisible(debugAtivo);
 				painelSintatico.setVisible(debugAtivo);
+				tableAnalisadorSintatico.setVisible(debugAtivo);
+				scrollTableAnalisadorSintatico.setVisible(debugAtivo);
 				painelLexico.setVisible(debugAtivo);
-				painelSemantico.setVisible(debugAtivo);
 				painelBotoes.repaint();
 				painelBotoes.revalidate();
 			}
@@ -232,7 +236,7 @@ public class PrincipalForm extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				textAreaConsole.setText(""); // Limpa o console
+				limparConsole();
 				limparTabelas();
 				textAreaConsole.setText("Execução parada.");
 				textAreaConsole.setForeground(Color.red);
@@ -257,144 +261,129 @@ public class PrincipalForm extends JFrame {
 		textAreaPrincipal.setFont(getDefaultFont()); // Fonte padrão
 
 		scrollPaneTextCompilador = new JScrollPane(textAreaPrincipal);
-		// bordaCountLinhas = new TextLineNumber(textAreaPrincipal);
+		bordaCountLinhas = new TextLineNumber(textAreaPrincipal);
 		scrollPaneTextCompilador.setRowHeaderView(bordaCountLinhas);
 
 		// Tabela do Analisador Lexico
 		painelSintatico = new JPanel();
-		painelSintatico.setBorder(new TitledBorder(new BevelBorder(BevelBorder.RAISED), "Analisador Sint\u00E1tico",
-				TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		painelSintatico.setBorder(new TitledBorder(new BevelBorder(BevelBorder.RAISED), "Analisador Sint\u00E1tico", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		painelSintatico.setVisible(false);
-
+		
 		// Aba Console e TextArea
 		tabPaneConsole = new JTabbedPane(JTabbedPane.TOP);
 		tabPaneConsole.setBackground(Color.WHITE);
-
+		
 		painelLexico = new JPanel();
-		painelLexico.setBorder(new TitledBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null),
-				"Analisador L\u00E9xico", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		painelLexico.setBorder(new TitledBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null), "Analisador L\u00E9xico", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		painelLexico.setVisible(false);
-
+		
 		panel = new JPanel();
-		panel.setBorder(new TitledBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null), "Menu",
-				TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panel.setBorder(new TitledBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null), "Menu", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
 
-		painelSemantico = new JPanel();
-		painelSemantico.setBorder(new TitledBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null),
-				"Analisador Sem\u00E2ntico", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		painelSemantico.setVisible(false);
-
+		
 		GroupLayout gl_painel = new GroupLayout(painelPrincipal);
-		gl_painel.setHorizontalGroup(gl_painel.createParallelGroup(Alignment.LEADING).addGroup(gl_painel
-				.createSequentialGroup().addContainerGap()
-				.addGroup(gl_painel.createParallelGroup(Alignment.LEADING)
+		gl_painel.setHorizontalGroup(
+			gl_painel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_painel.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_painel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_painel.createSequentialGroup()
-								.addGroup(gl_painel.createParallelGroup(Alignment.LEADING)
-										.addComponent(tabPaneConsole, GroupLayout.DEFAULT_SIZE, 1372, Short.MAX_VALUE)
-										.addComponent(scrollPaneTextCompilador, Alignment.TRAILING,
-												GroupLayout.DEFAULT_SIZE, 1225, Short.MAX_VALUE))
-								.addGap(18)
-								.addGroup(gl_painel.createParallelGroup(Alignment.TRAILING, false)
-										.addComponent(painelLexico, 0, 0, Short.MAX_VALUE)
-										.addComponent(painelSintatico, GroupLayout.DEFAULT_SIZE,
-												GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-										.addComponent(painelSemantico, GroupLayout.PREFERRED_SIZE, 433,
-												GroupLayout.PREFERRED_SIZE)))
-						.addComponent(panel, GroupLayout.PREFERRED_SIZE, 488, GroupLayout.PREFERRED_SIZE))
-				.addContainerGap()));
-		gl_painel.setVerticalGroup(gl_painel.createParallelGroup(Alignment.LEADING).addGroup(gl_painel
-				.createSequentialGroup().addContainerGap()
-				.addComponent(panel, GroupLayout.PREFERRED_SIZE, 57, GroupLayout.PREFERRED_SIZE).addGap(6)
-				.addGroup(gl_painel.createParallelGroup(Alignment.TRAILING)
+							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 488, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED))
+						.addGroup(Alignment.TRAILING, gl_painel.createSequentialGroup()
+							.addGroup(gl_painel.createParallelGroup(Alignment.TRAILING)
+								.addComponent(scrollPaneTextCompilador, GroupLayout.DEFAULT_SIZE, 1255, Short.MAX_VALUE)
+								.addComponent(tabPaneConsole, GroupLayout.DEFAULT_SIZE, 1255, Short.MAX_VALUE))
+							.addGap(18)))
+					.addGroup(gl_painel.createParallelGroup(Alignment.LEADING)
+						.addComponent(painelSintatico, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(painelLexico, GroupLayout.PREFERRED_SIZE, 246, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap())
+		);
+		gl_painel.setVerticalGroup(
+			gl_painel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_painel.createSequentialGroup()
+					.addGroup(gl_painel.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_painel.createSequentialGroup()
-								.addComponent(scrollPaneTextCompilador, GroupLayout.DEFAULT_SIZE, 830, Short.MAX_VALUE)
-								.addGap(18).addComponent(tabPaneConsole, GroupLayout.PREFERRED_SIZE, 118,
-										GroupLayout.PREFERRED_SIZE))
+							.addGap(53)
+							.addGroup(gl_painel.createParallelGroup(Alignment.TRAILING)
+								.addGroup(gl_painel.createSequentialGroup()
+									.addGap(23)
+									.addComponent(scrollPaneTextCompilador, GroupLayout.DEFAULT_SIZE, 623, Short.MAX_VALUE)
+									.addGap(18)
+									.addComponent(tabPaneConsole, GroupLayout.PREFERRED_SIZE, 118, GroupLayout.PREFERRED_SIZE))
+								.addGroup(gl_painel.createSequentialGroup()
+									.addComponent(painelSintatico, GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE)
+									.addGap(18)
+									.addComponent(painelLexico, GroupLayout.PREFERRED_SIZE, 305, GroupLayout.PREFERRED_SIZE))))
 						.addGroup(gl_painel.createSequentialGroup()
-								.addComponent(painelSemantico, GroupLayout.PREFERRED_SIZE, 287,
-										GroupLayout.PREFERRED_SIZE)
-								.addGap(18)
-								.addComponent(painelSintatico, GroupLayout.DEFAULT_SIZE, 338, Short.MAX_VALUE)
-								.addGap(18).addComponent(painelLexico, GroupLayout.PREFERRED_SIZE, 305,
-										GroupLayout.PREFERRED_SIZE)))
-				.addContainerGap()));
-
-		tableAnalisadorSematico = new TableAnalisadorSematico();
-		painelPrincipal.add(tableAnalisadorSematico);
-		scrollTableAnalisadorSemantico = new JScrollPane(tableAnalisadorSematico);
-		scrollTableAnalisadorSemantico.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-
-		GroupLayout gl_painelSemantico = new GroupLayout(painelSemantico);
-		gl_painelSemantico.setHorizontalGroup(gl_painelSemantico.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_painelSemantico.createSequentialGroup().addContainerGap()
-						.addComponent(scrollTableAnalisadorSemantico, GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
-						.addContainerGap()));
-		gl_painelSemantico.setVerticalGroup(gl_painelSemantico.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_painelSemantico.createSequentialGroup().addGap(5)
-						.addComponent(scrollTableAnalisadorSemantico, GroupLayout.PREFERRED_SIZE, 251,
-								GroupLayout.PREFERRED_SIZE)
-						.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
-		painelSemantico.setLayout(gl_painelSemantico);
-
-		// Painel dos botões
-		painelBotoes = new JPanel();
-
-		// Botões principais
-		btnNovo = new JButton(MasterImage.novo);
-		btnNovo.setToolTipText("Novo");
-		btnNovo.setFocusable(false);
-
-		btnAbrir = new JButton(MasterImage.abrir);
-		btnAbrir.setToolTipText("Abrir");
-		btnAbrir.setFocusable(false);
-
-		btnSalvar = new JButton(MasterImage.salvar);
-		btnSalvar.setToolTipText("Salvar");
-		btnSalvar.setFocusable(false);
-
-		btnExecutar = new JButton(MasterImage.executar);
-		btnExecutar.setToolTipText("Executar");
-		btnExecutar.setFocusable(false);
-
-		btnDebug = new JButton(MasterImage.debugOff);
-		btnDebug.setToolTipText("Debug OFF");
-		btnDebug.setFocusable(false);
-
-		btnResumeProx = new JButton(MasterImage.resumeProx);
-		btnResumeProx.setToolTipText("Resume/Próximo");
-		btnResumeProx.setFocusable(false);
-		btnResumeProx.setEnabled(false);
-
-		btnParar = new JButton(MasterImage.parar);
-		btnParar.setToolTipText("Parar");
-		btnParar.setFocusable(false);
-		btnParar.setEnabled(false);
-
-		btnSair = new JButton(MasterImage.sair);
-		btnSair.setToolTipText("Sair");
-		btnSair.setFocusable(false);
-		painelBotoes.setLayout(new GridLayout(0, 8, 0, 0));
-		painelBotoes.add(btnNovo);
-		painelBotoes.add(btnAbrir);
-		painelBotoes.add(btnSalvar);
-		painelBotoes.add(btnExecutar);
-		painelBotoes.add(btnDebug);
-		painelBotoes.add(btnResumeProx);
-		painelBotoes.add(btnParar);
-		painelBotoes.add(btnSair);
-		GroupLayout gl_panelmenu2 = new GroupLayout(panel);
-		gl_panelmenu2.setHorizontalGroup(gl_panelmenu2.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panelmenu2
-						.createSequentialGroup().addContainerGap().addComponent(painelBotoes,
-								GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addContainerGap(85, Short.MAX_VALUE)));
-		gl_panelmenu2.setVerticalGroup(gl_panelmenu2.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panelmenu2.createSequentialGroup()
-						.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-								GroupLayout.PREFERRED_SIZE)
-						.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
-		panel.setLayout(gl_panelmenu2);
-
+							.addContainerGap()
+							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 57, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap())
+		);
+		
+				// Painel dos botões
+				painelBotoes = new JPanel();
+				
+						// Botões principais
+						btnNovo = new JButton(MasterImage.novo);
+						btnNovo.setToolTipText("Novo");
+						btnNovo.setFocusable(false);
+						
+								btnAbrir = new JButton(MasterImage.abrir);
+								btnAbrir.setToolTipText("Abrir");
+								btnAbrir.setFocusable(false);
+								
+										btnSalvar = new JButton(MasterImage.salvar);
+										btnSalvar.setToolTipText("Salvar");
+										btnSalvar.setFocusable(false);
+										
+												btnExecutar = new JButton(MasterImage.executar);
+												btnExecutar.setToolTipText("Executar");
+												btnExecutar.setFocusable(false);
+												
+														btnDebug = new JButton(MasterImage.debugOff);
+														btnDebug.setToolTipText("Debug OFF");
+														btnDebug.setFocusable(false);
+														
+																btnResumeProx = new JButton(MasterImage.resumeProx);
+																btnResumeProx.setToolTipText("Resume/Próximo");
+																btnResumeProx.setFocusable(false);
+																btnResumeProx.setEnabled(false);
+																
+																		btnParar = new JButton(MasterImage.parar);
+																		btnParar.setToolTipText("Parar");
+																		btnParar.setFocusable(false);
+																		btnParar.setEnabled(false);
+																		
+																				btnSair = new JButton(MasterImage.sair);
+																				btnSair.setToolTipText("Sair");
+																				btnSair.setFocusable(false);
+																				painelBotoes.setLayout(new GridLayout(0, 8, 0, 0));
+																				painelBotoes.add(btnNovo);
+																				painelBotoes.add(btnAbrir);
+																				painelBotoes.add(btnSalvar);
+																				painelBotoes.add(btnExecutar);
+																				painelBotoes.add(btnDebug);
+																				painelBotoes.add(btnResumeProx);
+																				painelBotoes.add(btnParar);
+																				painelBotoes.add(btnSair);
+																				GroupLayout gl_panelmenu2 = new GroupLayout(panel);
+																				gl_panelmenu2.setHorizontalGroup(
+																						gl_panelmenu2.createParallelGroup(Alignment.LEADING)
+																						.addGroup(gl_panelmenu2.createSequentialGroup()
+																							.addContainerGap()
+																							.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+																							.addContainerGap(85, Short.MAX_VALUE))
+																				);
+																				gl_panelmenu2.setVerticalGroup(
+																						gl_panelmenu2.createParallelGroup(Alignment.LEADING)
+																						.addGroup(gl_panelmenu2.createSequentialGroup()
+																							.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+																							.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+																				);
+																				panel.setLayout(gl_panelmenu2);
+		
 		scrollPane = new JScrollPane();
 		tabPaneConsole.addTab("Console", null, scrollPane, null);
 		textAreaConsole = new JTextArea();
@@ -402,47 +391,62 @@ public class PrincipalForm extends JFrame {
 		textAreaConsole.setBackground(new Color(221, 221, 221));
 		textAreaConsole.setFont(getDefaultFont());
 		textAreaConsole.setEditable(false);
-
-		tableAnalisadorLexico = new TableAnalisadorLexico();
-		painelPrincipal.add(tableAnalisadorLexico);
-		scrollTableAnalisadorLexico = new JScrollPane(tableAnalisadorLexico);
-		scrollTableAnalisadorLexico.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		
+				tableAnalisadorLexico = new TableAnalisadorLexico();
+				painelPrincipal.add(tableAnalisadorLexico);
+				tableAnalisadorLexico.setVisible(false);
+				scrollTableAnalisadorLexico = new JScrollPane(tableAnalisadorLexico);
+				scrollTableAnalisadorLexico.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+				scrollTableAnalisadorLexico.setVisible(false);
 		GroupLayout gl_panelmenu = new GroupLayout(painelLexico);
-		gl_panelmenu.setHorizontalGroup(gl_panelmenu.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panelmenu.createSequentialGroup().addContainerGap()
-						.addComponent(scrollTableAnalisadorLexico, GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
-						.addContainerGap()));
-		gl_panelmenu.setVerticalGroup(gl_panelmenu.createParallelGroup(Alignment.TRAILING).addGroup(Alignment.LEADING,
-				gl_panelmenu
-						.createSequentialGroup().addContainerGap().addComponent(scrollTableAnalisadorLexico,
-								GroupLayout.PREFERRED_SIZE, 263, GroupLayout.PREFERRED_SIZE)
-						.addContainerGap(42, Short.MAX_VALUE)));
+		gl_panelmenu.setHorizontalGroup(
+			gl_panelmenu.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panelmenu.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(scrollTableAnalisadorLexico, GroupLayout.PREFERRED_SIZE, 210, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(14, Short.MAX_VALUE))
+		);
+		gl_panelmenu.setVerticalGroup(
+			gl_panelmenu.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_panelmenu.createSequentialGroup()
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addComponent(scrollTableAnalisadorLexico, GroupLayout.PREFERRED_SIZE, 263, GroupLayout.PREFERRED_SIZE)
+					.addGap(42))
+		);
 		painelLexico.setLayout(gl_panelmenu);
-
-		// Tabela do Analisador Sintatico
-		tableAnalisadorSintatico = new TableAnalisadorSintatico();
-		painelPrincipal.add(tableAnalisadorSintatico);
-		scrollTableAnalisadorSintatico = new JScrollPane(tableAnalisadorSintatico);
-		scrollTableAnalisadorSintatico.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		GroupLayout gl_panel2 = new GroupLayout(painelSintatico);
-		gl_panel2.setHorizontalGroup(gl_panel2.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel2.createSequentialGroup().addContainerGap()
-						.addComponent(scrollTableAnalisadorSintatico, GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
-						.addContainerGap()));
-		gl_panel2.setVerticalGroup(gl_panel2.createParallelGroup(Alignment.LEADING).addGroup(Alignment.TRAILING,
-				gl_panel2.createSequentialGroup().addContainerGap()
-						.addComponent(scrollTableAnalisadorSintatico, GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)
-						.addContainerGap()));
-		painelSintatico.setLayout(gl_panel2);
+		
+				// Tabela do Analisador Sintatico
+				tableAnalisadorSintatico = new TableAnalisadorSintatico();
+				painelPrincipal.add(tableAnalisadorSintatico);
+				tableAnalisadorSintatico.setVisible(false);
+				scrollTableAnalisadorSintatico = new JScrollPane(tableAnalisadorSintatico);
+				scrollTableAnalisadorSintatico.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+				GroupLayout gl_panel2 = new GroupLayout(painelSintatico);
+				gl_panel2.setHorizontalGroup(
+						gl_panel2.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel2.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(scrollTableAnalisadorSintatico, GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
+							.addContainerGap())
+				);
+				gl_panel2.setVerticalGroup(
+						gl_panel2.createParallelGroup(Alignment.LEADING)
+						.addGroup(Alignment.TRAILING, gl_panel2.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(scrollTableAnalisadorSintatico, GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)
+							.addContainerGap())
+				);
+				painelSintatico.setLayout(gl_panel2);
+				scrollTableAnalisadorSintatico.setVisible(false);
 		painelPrincipal.setLayout(gl_painel);
 	}
 
 	private void analisarLexico() {
-
-		if (tableAnalisadorLexico.getRowCount() != 0) {
+		
+		if(tableAnalisadorLexico.getRowCount() != 0) {
 			return;
 		}
-
+		
 		if (analisadorLexico == null) {
 			analisadorLexico = new AnalisadorLexico();
 		}
@@ -457,7 +461,7 @@ public class PrincipalForm extends JFrame {
 					textAreaConsole.setText(p.getErro() + p.getLinha() + "\n");
 				}
 			} else {
-				if (tableAnalisadorLexico.getRowCount() != 0) {
+				if(tableAnalisadorLexico.getRowCount() != 0) {
 					textAreaConsole.append("Análise Léxica Finalizada.\n");
 					erroLexico = false;
 				}
@@ -471,19 +475,47 @@ public class PrincipalForm extends JFrame {
 
 	private void analisarSintatico() {
 		adicionarLinhaPadraoSintatico();
-
+		
 		while (tableAnalisadorLexico.getRowCount() != 0 && erroLexico == false) {
 			analisarSintaticoDebug();
 		}
 
 	}
 
-	private void analisarSintaticoDebug() {
+//	private void analisarSintatico() {
+//		new Thread(new Runnable() {
+//
+//			@Override
+//			public void run() {
+//				try {
+//					while (!Thread.currentThread().isInterrupted()) {
+//						
+//						try {
+//							Thread.sleep(500);
+//						} catch (InterruptedException e) {
+//							throw e;
+//						}
+//						
+//				analisarSintaticoDebug();
+//
+//					if(tableAnalisadorLexico.getRowCount() == 0 || erroLexico == true) {
+//						textAreaConsole.append("Análise Sintática Finalizada.");
+//						break;
+//					}
+//				}
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
+//	},"Teste.arquivosPastaPrincipal").start();
+//	}
 
-		if (tableAnalisadorLexico.getRowCount() == 0) {
+	private void analisarSintaticoDebug() {
+		
+		if(tableAnalisadorLexico.getRowCount() == 0) {
 			return;
 		}
-
+		
 		if (tokensTerminais.getSimbolo(tableAnalisadorSintatico.getValorLinhaSelecionada(0)) != null) {
 			if (tableAnalisadorSintatico.getValorLinhaSelecionada(0) == tableAnalisadorLexico
 					.getValorLinhaSelecionada(0)) {
@@ -491,24 +523,22 @@ public class PrincipalForm extends JFrame {
 				excluirLinhasIniciaisTabelas();
 			} else {
 				erroLexico = true;
-				auxLinha = auxLinha != tableAnalisadorLexico.getValorLinhaSelecionada(2) ? auxLinha
-						: tableAnalisadorLexico.getValorLinhaSelecionada(2);
-				textAreaConsole.append("Erro na linha " + auxLinha + ", encontrado " + "\" "
-						+ tokensTerminais.getSimbolo(tableAnalisadorLexico.getValorLinhaSelecionada(0)) + " \""
-						+ " e esperado " + "\" "
-						+ tokensTerminais.getSimbolo(tableAnalisadorSintatico.getValorLinhaSelecionada(0)) + " \" \n");
+				auxLinha = auxLinha != tableAnalisadorLexico.getValorLinhaSelecionada(2) ? auxLinha : tableAnalisadorLexico.getValorLinhaSelecionada(2);
+				textAreaConsole.append("Erro na linha " + auxLinha
+						+ ", encontrado " + "\" " + tokensTerminais.getSimbolo(tableAnalisadorLexico.getValorLinhaSelecionada(0)) + " \"" + " e esperado "
+						+ "\" " + tokensTerminais.getSimbolo(tableAnalisadorSintatico.getValorLinhaSelecionada(0)) + " \" \n");
 			}
 		} else if (tokensNaoTerminais.getSimbolo(tableAnalisadorSintatico.getValorLinhaSelecionada(0)) != null) {
 			matrizProd = getDerivacoes(tableAnalisadorSintatico.getValorLinhaSelecionada(0),
 					tableAnalisadorLexico.getValorLinhaSelecionada(0));
 			if (matrizProd != null) {
-				if (debugAtivo) {
-					textAreaConsole.append("[" + tableAnalisadorSintatico.getValorLinhaSelecionada(0) + ","
-							+ tableAnalisadorLexico.getValorLinhaSelecionada(0) + "] Derivou em ");
-					for (String s : matrizProd) {
-						textAreaConsole.append(s + "|");
-					}
-					textAreaConsole.append("\n");
+				if(debugAtivo) {
+				textAreaConsole.append("[" + tableAnalisadorSintatico.getValorLinhaSelecionada(0) + ","
+						+ tableAnalisadorLexico.getValorLinhaSelecionada(0) + "] Derivou em ");
+						for(String s : matrizProd ) {
+							textAreaConsole.append(s + "|");
+						}
+						textAreaConsole.append("\n");
 				}
 				if (matrizProd[0].equals("NULL")) {
 					tableAnalisadorSintatico.excluirLinhasSelecionadas();
@@ -533,14 +563,14 @@ public class PrincipalForm extends JFrame {
 				erroLexico = true;
 				textAreaConsole.append("Erro na linha " + tableAnalisadorLexico.getValorLinhaSelecionada(2));
 				textAreaConsole.append(" A derivação [" + tableAnalisadorSintatico.getValorLinhaSelecionada(0) + ","
-						+ tableAnalisadorLexico.getValorLinhaSelecionada(0) + "] \'"
-						+ tokensNaoTerminais.getSimbolo(tableAnalisadorSintatico.getValorLinhaSelecionada(0)) + ","
-						+ tokensTerminais.getSimbolo(tableAnalisadorLexico.getValorLinhaSelecionada(0))
-						+ "\' Não foi encontrada na tabela de parsing.");
+						+ tableAnalisadorLexico.getValorLinhaSelecionada(0) + "] \'"+
+						tokensNaoTerminais.getSimbolo(tableAnalisadorSintatico.getValorLinhaSelecionada(0))+ ","+
+						tokensTerminais.getSimbolo(tableAnalisadorLexico.getValorLinhaSelecionada(0))+
+						"\' Não foi encontrada na tabela de parsing.");
 			}
 		}
-
-		if (tableAnalisadorLexico.getRowCount() == 0 && tableAnalisadorSintatico.getRowCount() == 0) {
+		
+		if(tableAnalisadorLexico.getRowCount() == 0 && tableAnalisadorSintatico.getRowCount() == 0) {
 			textAreaConsole.append("Análise Sintática Finalizada.");
 		}
 
@@ -565,6 +595,12 @@ public class PrincipalForm extends JFrame {
 		tableAnalisadorSintatico.selecionaPrimeiraLinha();
 		tableAnalisadorLexico.excluirLinhasSelecionadas();
 		tableAnalisadorSintatico.excluirLinhasSelecionadas();
+		tableAnalisadorLexico.selecionaPrimeiraLinha();
+		tableAnalisadorSintatico.selecionaPrimeiraLinha();
+	}
+
+	private void limparConsole() {
+		textAreaConsole.setText("");
 	}
 
 	private void limparTabelas() {
@@ -572,6 +608,10 @@ public class PrincipalForm extends JFrame {
 		tableAnalisadorSintatico.limparTabela();
 	}
 
+	private void limparArea() {
+		textAreaPrincipal.setText("");
+	}
+	
 	private void gravarArquivo() {
 		try {
 			new ManipularArquivo();
@@ -582,23 +622,22 @@ public class PrincipalForm extends JFrame {
 			new Msg().mensagemErro("Problema ao gravar arquivo!");
 		}
 	}
-
+	
 	private StyledDocument getDoc() {
 		HashMap<String, Integer> mapTokens = tokensTerminais.getMap();
-		String palavras = "";
-		for (Map.Entry<String, Integer> candidatoEntry : mapTokens.entrySet()) {
-			if (candidatoEntry.getValue() < 30 && !candidatoEntry.getKey().equals("INTEIRO")
-					&& !candidatoEntry.getKey().equals("IDENTIFICADOR")) {
+		String palavras="";
+		for (Map.Entry<String, Integer> candidatoEntry : mapTokens.entrySet()) { 
+			if(candidatoEntry.getValue() < 30 && !candidatoEntry.getKey().equals("INTEIRO") && !candidatoEntry.getKey().equals("IDENTIFICADOR")) {
 				palavras += candidatoEntry.getKey() + "|";
 			}
 		}
-		palavras = palavras.substring(0, palavras.length() - 1);
-
-		return colorirPalavras.colorir(Color.BLUE, palavras);
+		palavras = palavras.substring(0, palavras.length()-1);
+		
+		return  colorirPalavras.colorir(Color.BLUE, palavras);
 	}
-
+	
 	private void adicionarLinhaPadraoSintatico() {
-		if (tableAnalisadorSintatico.getRowCount() == 0) {
+		if(tableAnalisadorSintatico.getRowCount() == 0) {
 			tableAnalisadorSintatico.adicionarLinha(new Object[] { 52, "PROGRAMA" });
 		}
 	}
