@@ -156,6 +156,8 @@ public class TablePadrao extends JTable {
             setModel(model);
             if(getRowCount() > 0) {
                 setRowSelectionInterval(getRowCount() - 1, getRowCount() - 1);
+                this.selecionaPrimeiraLinha();
+        		this.selecionaPrimeiraLinha();
             }
         } else {
             new Msg().mensagemAviso("Nenhuma linha selecionada.");
