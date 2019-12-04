@@ -4,9 +4,9 @@
 
 #### Alunos: Alisson Schmitz e Eduardo Americo
 
-##### Apresentação 1 - Analisador Léxico: a definir.
-##### Apresentação 2 - Analisador Sintático: a definir.
-##### Apresentação 3 - Analisador Semântico: a definir.
+##### Apresentação 1 - Analisador Léxico: 30/09/2019.
+##### Apresentação 2 - Analisador Sintático: 28/10/2019.
+##### Apresentação 3 - Analisador Semântico: 09/12/2019.
 
 ## Tecnologia utilizada
 * Java 1.8
