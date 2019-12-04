@@ -28,9 +28,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.StyledDocument;
 
 import br.com.compilador.analisadores.AnalisadorLexico;
-import br.com.compilador.analisadores.TabelaParsingMatriz;
+import br.com.compilador.analisadores.AnalisadorSemantico;
 import br.com.compilador.analisadores.TokensNaoTerminais;
 import br.com.compilador.analisadores.TokensTerminais;
+import br.com.compilador.enums.TabelaParsingMatriz;
 import br.com.compilador.image.MasterImage;
 import br.com.compilador.model.Pilha;
 import br.com.compilador.model.PilhaErros;
@@ -60,7 +61,7 @@ public class PrincipalForm extends JFrame {
 	private JPanel painelSemantico, painelSintatico, painelLexico;
 	private TableAnalisadorSintatico tableAnalisadorSintatico;
 	private TableAnalisadorLexico tableAnalisadorLexico;
-	private TableAnalisadorSematico tableAnalisadorSematico;
+	public static TableAnalisadorSematico tableAnalisadorSematico;
 	private JScrollPane scrollTableAnalisadorSemantico, scrollTableAnalisadorLexico, scrollTableAnalisadorSintatico;
 
 	// TextArea Console
@@ -70,6 +71,7 @@ public class PrincipalForm extends JFrame {
 	// Analisadores
 	private AnalisadorLexico analisadorLexico;
 	private Stack<Pilha> simbolosLexicos;
+	private AnalisadorSemantico analisadorSemantico = new AnalisadorSemantico();
 
 	// Auxiliares
 	private String[] matrizProd;
@@ -257,7 +259,7 @@ public class PrincipalForm extends JFrame {
 		textAreaPrincipal.setFont(getDefaultFont()); // Fonte padrão
 
 		scrollPaneTextCompilador = new JScrollPane(textAreaPrincipal);
-		// bordaCountLinhas = new TextLineNumber(textAreaPrincipal);
+		bordaCountLinhas = new TextLineNumber(textAreaPrincipal);
 		scrollPaneTextCompilador.setRowHeaderView(bordaCountLinhas);
 
 		// Tabela do Analisador Lexico
@@ -453,9 +455,7 @@ public class PrincipalForm extends JFrame {
 				tableAnalisadorLexico.adicionarLinha(new Object[] { p.getCodigo(), p.getSimbolo(), p.getLinha() });
 			}
 			if (analisadorLexico.getErros() != null) {
-				for (PilhaErros p : analisadorLexico.getErros()) {
-					textAreaConsole.setText(p.getErro() + p.getLinha() + "\n");
-				}
+				mostrarErros(analisadorLexico.getErros());
 			} else {
 				if (tableAnalisadorLexico.getRowCount() != 0) {
 					textAreaConsole.append("Análise Léxica Finalizada.\n");
@@ -468,6 +468,12 @@ public class PrincipalForm extends JFrame {
 			e.printStackTrace();
 		}
 	}
+	
+	private void mostrarErros(Stack<PilhaErros> pilhaErros) {
+		for (PilhaErros p : pilhaErros) {
+			textAreaConsole.append(p.getErro() + p.getLinha() + "\nErro Semântico.");
+		}
+	}
 
 	private void analisarSintatico() {
 		adicionarLinhaPadraoSintatico();
@@ -475,11 +481,11 @@ public class PrincipalForm extends JFrame {
 		while (tableAnalisadorLexico.getRowCount() != 0 && erroLexico == false) {
 			analisarSintaticoDebug();
 		}
-
+		//limparTabelas();
+		analisadorSemantico = null;
 	}
 
 	private void analisarSintaticoDebug() {
-
 		if (tableAnalisadorLexico.getRowCount() == 0) {
 			return;
 		}
@@ -488,6 +494,22 @@ public class PrincipalForm extends JFrame {
 			if (tableAnalisadorSintatico.getValorLinhaSelecionada(0) == tableAnalisadorLexico
 					.getValorLinhaSelecionada(0)) {
 				auxLinha = tableAnalisadorLexico.getValorLinhaSelecionada(2);
+				
+				if(analisadorSemantico == null) {
+					analisadorSemantico = new AnalisadorSemantico();
+				}
+				
+				analisadorSemantico.analisar(
+						tableAnalisadorLexico.getValorLinhaSelecionada(0),
+						tableAnalisadorLexico.getValueAt(tableAnalisadorLexico.getLinhaSelecionada(), 1).toString(),
+						tableAnalisadorLexico.getValorLinhaSelecionada(2)
+						);
+				
+				if (analisadorSemantico.getErros() != null) {
+					mostrarErros(analisadorSemantico.getErros());
+					erroLexico = true;
+				}
+								
 				excluirLinhasIniciaisTabelas();
 			} else {
 				erroLexico = true;
@@ -536,12 +558,14 @@ public class PrincipalForm extends JFrame {
 						+ tableAnalisadorLexico.getValorLinhaSelecionada(0) + "] \'"
 						+ tokensNaoTerminais.getSimbolo(tableAnalisadorSintatico.getValorLinhaSelecionada(0)) + ","
 						+ tokensTerminais.getSimbolo(tableAnalisadorLexico.getValorLinhaSelecionada(0))
-						+ "\' Não foi encontrada na tabela de parsing.");
+						+ "\' Não foi encontrada na tabela de parsing. \n"
+						+ "Erro Sintático.");
 			}
 		}
 
 		if (tableAnalisadorLexico.getRowCount() == 0 && tableAnalisadorSintatico.getRowCount() == 0) {
-			textAreaConsole.append("Análise Sintática Finalizada.");
+			textAreaConsole.append("Análise Sintática Finalizada.\n");
+			textAreaConsole.append("Análise Semântica Finalizada.");
 		}
 
 		matrizProd = null;
@@ -570,6 +594,7 @@ public class PrincipalForm extends JFrame {
 	private void limparTabelas() {
 		tableAnalisadorLexico.limparTabela();
 		tableAnalisadorSintatico.limparTabela();
+		tableAnalisadorSematico.limparTabela();
 	}
 
 	private void gravarArquivo() {

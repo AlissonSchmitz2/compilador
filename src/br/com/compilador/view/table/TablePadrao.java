@@ -85,26 +85,6 @@ public class TablePadrao extends JTable {
     }
     
     /**
-     * Adiciona uma linha com todas as colunas vazias na janela.
-     */
-    public void adicionarLinhaBranco() {
-        adicionarLinha(new Object[]{});
-    }
-    
-    /**
-     * Incluir uma linha em branco acima da linha atualmente selecionada. Caso não tenha nenhum
-     * linha selecionada, será incluida a linha no final.
-     */
-    public void incluirLinhaBrancoAcimaDaSelecionada() {
-        DefaultTableModel model = (DefaultTableModel) this.getModel();
-        if(this.getSelectedRow() != -1) {
-            model.insertRow(this.getSelectedRow(), new Object[] {});
-        } else {
-            adicionarLinhaBranco();
-        }
-    }
-    
-    /**
      * Rola a barra de rolagem até a linha passada por parâmetro.
      * @param rowIndex número da linha até onde a barra de rolagem deve ir.
      */
@@ -181,6 +161,14 @@ public class TablePadrao extends JTable {
 	public int getValorLinhaSelecionada(int coluna) {	
 		if(getSelectedRow() != -1) {
 			return (int)getValueAt(getLinhaSelecionada(), coluna);
+		}
+		
+		return 0;
+	}
+	
+	public int getValorLinhaAbaixoDaSelecionada(int coluna) {	
+		if(getSelectedRow() != -1) {
+			return (int)getValueAt(getLinhaSelecionada() + 1, coluna);
 		}
 		
 		return 0;

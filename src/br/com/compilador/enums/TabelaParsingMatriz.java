@@ -1,6 +1,6 @@
-package br.com.compilador.analisadores;
+package br.com.compilador.enums;
 
-import br.com.compilador.analisadores.TabelaParsingDerivacoes;;
+;
 
 public enum TabelaParsingMatriz {
 

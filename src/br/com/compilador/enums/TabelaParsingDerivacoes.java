@@ -1,4 +1,4 @@
-package br.com.compilador.analisadores;
+package br.com.compilador.enums;
 
 public enum TabelaParsingDerivacoes {
 
